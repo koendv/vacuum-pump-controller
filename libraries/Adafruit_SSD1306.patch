@@ -1,0 +1,39 @@
+diff --git a/Adafruit_SSD1306.cpp b/Adafruit_SSD1306.cpp
+index 0ab81a4..3b8e347 100644
+--- a/Adafruit_SSD1306.cpp
++++ b/Adafruit_SSD1306.cpp
+@@ -51,7 +51,10 @@
+ #endif
+ 
+ #include "Adafruit_SSD1306.h"
++#ifdef SPLASHBITMAP
++// omitting splash bitmap saves 1352 bytes flash
+ #include "splash.h"
++#endif
+ #include <Adafruit_GFX.h>
+ 
+ // SOME DEFINES AND STATIC VARIABLES USED INTERNALLY -----------------------
+@@ -467,6 +470,7 @@ bool Adafruit_SSD1306::begin(uint8_t vcs, uint8_t addr, bool reset,
+     return false;
+ 
+   clearDisplay();
++#ifdef SPLASHBITMAP
+   if (HEIGHT > 32) {
+     drawBitmap((WIDTH - splash1_width) / 2, (HEIGHT - splash1_height) / 2,
+                splash1_data, splash1_width, splash1_height, 1);
+@@ -474,6 +478,7 @@ bool Adafruit_SSD1306::begin(uint8_t vcs, uint8_t addr, bool reset,
+     drawBitmap((WIDTH - splash2_width) / 2, (HEIGHT - splash2_height) / 2,
+                splash2_data, splash2_width, splash2_height, 1);
+   }
++#endif
+ 
+   vccstate = vcs;
+ 
+@@ -525,6 +530,7 @@ bool Adafruit_SSD1306::begin(uint8_t vcs, uint8_t addr, bool reset,
+     digitalWrite(rstPin, LOW);  // Bring reset low
+     delay(10);                  // Wait 10 ms
+     digitalWrite(rstPin, HIGH); // Bring out of reset
++    delay(10);                  // Wait 10 ms
+   }
+ 
+   TRANSACTION_START

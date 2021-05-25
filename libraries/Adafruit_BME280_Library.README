@@ -1,0 +1,3 @@
+This patch is needed if
+- BME280 is used instead of BMP280
+- you wish to detect when a BME280 is unplugged or hangs

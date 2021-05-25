@@ -1,0 +1,19 @@
+diff --git a/Adafruit_BME280.cpp b/Adafruit_BME280.cpp
+index 708215c..9941b8d 100644
+--- a/Adafruit_BME280.cpp
++++ b/Adafruit_BME280.cpp
+@@ -547,10 +547,12 @@ float Adafruit_BME280::seaLevelForAltitude(float altitude, float atmospheric) {
+ }
+ 
+ /*!
+- *   Returns Sensor ID found by init() for diagnostics
++ *   Returns Sensor ID for checking if sensor present and responsive
+  *   @returns Sensor ID 0x60 for BME280, 0x56, 0x57, 0x58 BMP280
+  */
+-uint32_t Adafruit_BME280::sensorID(void) { return _sensorID; }
++uint32_t Adafruit_BME280::sensorID(void) {
++  return read8(BME280_REGISTER_CHIPID);
++}
+ 
+ /*!
+  *   Returns the current temperature compensation value in degrees Celcius

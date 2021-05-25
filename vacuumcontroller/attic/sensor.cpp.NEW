@@ -1,0 +1,232 @@
+#include "sensor.h"
+#include "motor.h"
+#include "settings.h"
+#include <math.h>
+
+#include <Adafruit_BMP280.h>
+//#include <Adafruit_BME280.h>
+//#include <Adafruit_BME680.h>
+#include "breathing_led.h"
+
+//#define SIMULATION
+
+// Chip selects for the four BMP280 headers
+#define H1_CS PA15
+#define H2_CS PA8
+#define H3_CS PB10
+#define H4_CS PB11
+
+// pins for SPI bus 2
+#define SCK2  PB13
+#define MOSI2 PB15
+#define MISO2 PB14
+
+// pins for SPI bus 3
+#define SCK3  PB3
+#define MOSI3 PB5
+#define MISO3 PB4
+
+namespace sensor {
+  double vacuum;
+  int lastMillis = 0;
+  int sampleTime = 100;
+  double pressure[NUM_SENSOR];
+  const int8_t cs[NUM_SENSOR] = {H1_CS, H2_CS, H3_CS, H4_CS};
+  /*
+   * Sensor states:
+   * NO_SENSOR  no sensor detected
+   * SENSOR_OK  sensor detected and running
+   * SENSOR_ERR sensor detected, trying reset
+   * SENSOR_BAD sensor detected, not running.
+   */
+  enum state_enum {NO_SENSOR, SENSOR_OK, SENSOR_ERR, SENSOR_BAD};
+  static state_enum sensor_state[NUM_SENSOR];
+
+  SPIClass SPITwo(MOSI2, MISO2, SCK2);
+  //SPIClass SPIThree(MOSI3, MISO3, SCK3);      // hardware SPI3 on STM32F411
+
+  Adafruit_BMP280 sensor[NUM_SENSOR] {
+    Adafruit_BMP280(H1_CS),            // hardware SPI2
+    Adafruit_BMP280(H2_CS),            // hardware SPI2
+    Adafruit_BMP280(H3_CS, &SPITwo), // software SPI3 on STM32F103
+    Adafruit_BMP280(H4_CS, &SPITwo)  // software SPI3 on STM32F103
+    //Adafruit_BMP280(H3_CS, MOSI2, MISO2, SCK2), // software SPI3 on STM32F103
+    //Adafruit_BMP280(H4_CS, MOSI2, MISO2, SCK2)  // software SPI3 on STM32F103
+  };
+
+  void setSampleTime(int millis) {
+    if (millis > 0) sampleTime = millis;
+  }
+
+  // soft reset
+  void reset() {
+    for (int i = 0; i < NUM_SENSOR; i++)
+      sensor[i].reset();
+  }
+
+  void logSensors(int now) {
+    Serial.print('\t');
+    Serial.print(now);
+    Serial.print('\t');
+    Serial.print(motor::pwma_percent);
+    Serial.print('\t');
+    for (int i = 0; i < NUM_SENSOR; i++) {
+      Serial.print(pressure[i]);
+      Serial.print('\t');
+    }
+    Serial.println();
+  }
+
+  void printSensors() {
+    const static char* msg[]={"- ", "ok ", "err", "?  "};
+    Serial.print("sensors ");
+    for (int i = 0; i < NUM_SENSOR; i++) {
+      uint8_t s = sensor_state[i];
+      if ((s < 0) || (s > SENSOR_BAD)) s = SENSOR_BAD;
+      Serial.print(msg[s]);
+      Serial.print(' ');
+    }
+    Serial.println();
+  }
+
+/* test sensor present and resposive */
+bool checkSensor(int i) {
+    uint8_t sensor_id = sensor[i].sensorID();
+    return (sensor_id == 0x56) || (sensor_id == 0x57) || (sensor_id == 0x58);
+  }
+
+#ifdef SIMULATION
+
+  /* simulate sensor and vacuum vessel */
+  void readSensor() {
+    static int lastSensorMillis = 0;
+    int now = millis();
+    float delta_t = (now - lastSensorMillis)/1000;
+    lastSensorMillis = now;
+
+    double motor = 0.0, valve = 0.0;
+    const double deadZone = MAXPWM/5.0; // pump does not turn if voltage too low
+    if (motor::pwma > deadZone) motor = (motor::pwma-deadZone)/(MAXPWM-deadZone);
+    valve = motor::getswitch(2);
+    double steadystate = motor * 1000 - valve * 500;
+    if (steadystate < 0.0) steadystate = 0.0;
+
+    for (int i = 0; i < NUM_SENSOR; i++)
+      pressure[i] = 0.0;
+    vacuum = vacuum + (steadystate - vacuum) / 40.0;
+  }
+
+#else
+
+  void readSensor() {
+    bool detected;
+    uint8_t sensor_id;
+    for (int i = 0; i < NUM_SENSOR; i++) {
+      switch (sensor_state[i]) {
+        case NO_SENSOR:
+          //Serial.println("NO_SENSOR");
+          detected = digitalRead(cs[i]);
+          if (detected) {
+            digitalWrite(cs[i], HIGH);
+            pinMode(cs[i], OUTPUT);
+            if (sensor[i].begin()) {
+              sensor_state[i] = SENSOR_OK;
+            } else {
+              sensor_state[i] = SENSOR_ERR;
+            }
+            printSensors();
+          }
+          break;
+        case SENSOR_OK:
+          //Serial.println("SENSOR_OK");
+          if (checkSensor(i)) {
+            pressure[i] = sensor[i].readPressure() / 100.0F;
+          } else {
+            pressure[i] = 0.0;
+            sensor_state[i] = SENSOR_ERR;
+            printSensors();
+          }
+          break;
+        case SENSOR_ERR:
+          //Serial.println("SENSOR_ERR");
+          // unplugged?
+          pinMode(cs[i], INPUT_PULLDOWN);
+          if (!digitalRead(cs[i])) {
+            sensor_state[i] = NO_SENSOR;
+            printSensors();
+            break;
+          }
+          pinMode(cs[i], OUTPUT);
+          // try resetting
+          sensor[i].reset();
+          sensor[i].setSampling();
+          delay(100);
+          if (checkSensor(i)) {
+            sensor_state[i] = SENSOR_OK;
+            printSensors();
+            break;
+          }
+          // reset did not work
+          pinMode(cs[i], INPUT_PULLDOWN);
+          sensor_state[i] = SENSOR_BAD;
+          break;
+        case SENSOR_BAD:
+          //Serial.println("SENSOR_BAD");
+          // check if sensor unplugged
+          if (!digitalRead(cs[i])) {
+            sensor_state[i] = NO_SENSOR;
+            printSensors();
+          }
+          break;
+        default:
+          //Serial.println("DEFAULT");
+          // should never happen
+          Serial.print("state? ");
+          Serial.println(sensor_state[i]);
+          pinMode(cs[i], INPUT_PULLDOWN);
+          sensor_state[i] = NO_SENSOR;
+          break;
+       }
+      }
+
+    vacuum = pressure[1] - pressure[0]; // pressure[0]] = atmospheric, pressure[1]] = vacuum vessel
+
+    //if (isnan(pressure[0]) || isnan(pressure[1])) breathingLed::blink();
+  }
+
+#endif
+
+  void setup() {
+    // detect sensor by reading cs pin - sensor pulls cs up
+    for (int i = 0; i < NUM_SENSOR; i++) {
+      pinMode(cs[i], INPUT_PULLDOWN);
+      sensor_state[i] = NO_SENSOR;
+    }
+    delay(10); // allow cs to settle
+    for (int i = 0; i < NUM_SENSOR; i++) {
+      bool detected = digitalRead(cs[i]);
+      if (detected) {
+        digitalWrite(cs[i], HIGH);
+        pinMode(cs[i], OUTPUT);
+        if (sensor[i].begin()) {
+          sensor_state[i] = SENSOR_OK;
+        } else {
+          pinMode(cs[i], INPUT_PULLDOWN);
+          sensor_state[i] = SENSOR_BAD;
+        }
+      }
+    }
+    printSensors();
+  }
+
+  void loop() {
+    int now =  millis();
+    if ((now < lastMillis) || (now - lastMillis > sampleTime)) {
+      readSensor();
+      lastMillis = now;
+      if (settings::logging) logSensors(now);
+    }
+  }
+}
+
+// not truncated
