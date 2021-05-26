@@ -300,17 +300,15 @@ FDM 3D-printed parts:
 
 [![screenshot](images/sensor_assembly_small.jpg)](https://raw.githubusercontent.com/koendv/vacuum-pump-controller/master/images/sensor_assembly_big.jpg)
 
-*work in progress - still have to add Openscad sources*
-
 The pressure sensor consists of a GY-BMP280-3.3 module, sealed inside a 3d-printed housing.
 
-When looking at the GY-BMP280-3.3 pressure sensor module, the contacts are, from left to right: SDO, CSB, SDA, SCL, GND, VCC.
-
-The housing has been designed using OpenSCAD. [OpenSCAD sources](openscad/).
+The housing has been designed using OpenSCAD. [OpenSCAD sources and STL files](openscad/).
 
 The tube is 6mm outside diameter, 4 mm inside diameter PU. Housing is sealed using silicone rubber. After applying the silicone rubber, wet your finger in liquid dishwasher detergent to gently push the silicone rubber into shape.
 
 Test the sensor works *before* you seal the housing.
+
+When looking at the GY-BMP280-3.3 pressure sensor module, the contacts are, from left to right: SDO, CSB, SDA, SCL, GND, VCC.
 
 ## Software
 
