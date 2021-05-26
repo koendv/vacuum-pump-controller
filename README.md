@@ -274,6 +274,7 @@ The board is built around an STM32F103 *Blue Pill*. The microcontroller reads th
 - [schematic](doc/schematic.pdf)
 - [pcb top](doc/pcb_top.pdf)
 - [pcb bottom](doc/pcb_bottom.pdf)
+- [easyeda/oshw project](https://oshwlab.com/koendv/vacuum-pump-controller). 
 
 The board is 2 layer, 55 x 55 mm.
 
@@ -284,7 +285,7 @@ Off-the-shelf parts:
 | | description |
 |---|---|
 |1 | [STM32F103xx](https://www.aliexpress.com/item/32525208361.html) controller board, 128kbyte flash.
-|4 | [BMP280 3.3V pressure sensor](https://www.aliexpress.com/item/4000587263474.html)
+|4 | [BMP280 3.3V pressure sensor "GY-BMP280-3.3"](https://www.aliexpress.com/item/4000587263474.html)
 |1 | [TB6612FNG dual motor driver](https://www.aliexpress.com/item/32978024026.html)
 |1 | [OLED 128x64, SPI, 7pin, SSD1306, yellow/blue](https://www.aliexpress.com/item/32638662748.html)
 |1 | DC005 DC jack
@@ -301,11 +302,11 @@ FDM 3D-printed parts:
 
 *work in progress - still have to add Openscad sources*
 
-The pressure sensor consists of a bmp280 module, sealed inside a 3d-printed housing.
+The pressure sensor consists of a GY-BMP280-3.3 module, sealed inside a 3d-printed housing.
 
-When looking at the BMP280-3.3V pressure sensor module, the contacts are, from left to right: SDO, CSB, SDA, SCL, GND, VCC.
+When looking at the GY-BMP280-3.3 pressure sensor module, the contacts are, from left to right: SDO, CSB, SDA, SCL, GND, VCC.
 
-The housing has been designed using OpenSCAD.
+The housing has been designed using OpenSCAD. [OpenSCAD sources](openscad/).
 
 The tube is 6mm outside diameter, 4 mm inside diameter PU. Housing is sealed using silicone rubber. After applying the silicone rubber, wet your finger in liquid dishwasher detergent to gently push the silicone rubber into shape.
 
@@ -313,7 +314,7 @@ Test the sensor works *before* you seal the housing.
 
 ## Software
 
-The software is an Arduino sketch, compiled with the STM32duino board support package. Sources are available on [git](https://github.com/koendv/vacuum-pump-controller/tree/main/vacuumcontroller). There's also a backup of the Arduino libraries used.
+The software is an Arduino sketch, compiled with the STM32duino board support package. Sources are available on [git](https://github.com/koendv/vacuum-pump-controller/tree/main/arduino/vacuumcontroller). There's also a backup of the Arduino libraries used.
 
 ## Firmware
 
