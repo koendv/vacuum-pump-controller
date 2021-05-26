@@ -1,4 +1,4 @@
-# vacuum-controller
+# vacuum pump controller
 
 [![screenshot](images/vacuum_pump_controller_with_sensor_small.jpg)](https://raw.githubusercontent.com/koendv/vacuum-pump-controller/master/images/vacuum_pump_controller_with_sensor_big.jpg)
 
@@ -71,7 +71,9 @@ We have three sensors. The first sensor measures atmospheric pressure; the secon
 The vacuum pump controller is a PID controller. *setpoint* is the 
 desired value; *Kp*, *Ki* and *Kd* are controller proportional, integral and derivative gain. It is normal for *Kd* to be zero. If *logging* is non-zero, pressure is logged on the console every 0.1s.
 
-*pressure* is the pressure from the four sensors, in hPa. If a sensor is not plugged in, the pressure is 0. Lastly, *sensors* is the sensor state. If a sensor says ``?``, check the cable, check the sensor is plugged in right, or power cycle the board.
+*pressure* is the pressure from the four sensors, in hPa. If a sensor is not plugged in, the pressure is 0.
+
+Lastly, *sensors* is the sensor state. If a sensor says ``?``, check the cable, check the sensor is plugged in right, or power cycle the board.
 
 #### s - Setpoint
 
@@ -146,7 +148,7 @@ Sets the motor PWM manually. Value is a number from 0 to 100, inclusive.
 
 #### Autotune
 
-*Autotune* measures the step response. From this measurement values for Kp, Ki and Kd are calculated using (lambda tuning)[https://www.controleng.com/articles/fundamentals-of-lambda-tuning/]
+*Autotune* measures the step response. From this measurement values for Kp, Ki and Kd are calculated using [lambda tuning](https://www.controleng.com/articles/fundamentals-of-lambda-tuning/)
 
 ```
 >a
@@ -164,15 +166,28 @@ Kp: 149.60 Ki: 54.03 Kd: 0.00
 enter w to save
 ```
 
-After *autotune*, if the calculated settings seem correct, use ``w`` to store these settings in non-volatile memory.
+After *autotune*, if the calculated settings seem correct, use ``w`` to store these settings in non-volatile memory. If you choose not to save, the old settings will be restored after the next reset or power cycle.
 
 Run *autotune* again if the system has changed, a different vacuum pump or vacuum vessel has been installed.
  
 #### Write 
 The ``w`` write command saves Kp, Ki, Kd, setpoint, and logging to non-volatile memory. The saved values will be restored on power-up.
 
+```
+>w
+ok
+```
+
 #### Reset
 The ``r`` reset command reboots the controller.
+
+```
+>r
+vacuum controller - type h for help
+sensors ok  ok  ok  -  
+ready
+>
+```
 
 #### Firmware
 The ``f`` command prints the compilation date and ram usage.
@@ -188,8 +203,8 @@ compiled May 24 2021
 If, instead of autotune, you wish to *manually* tune the controller, try the following:
 
 - set Kp, Ki, Kd to 0
-- increase Kp until the system oscillates. Halve the value of Kp.
-- increase Ki until the system oscillates. Halve the value of Ki.
+- increase Kp until the system oscillates. Set Kp to half this value.
+- increase Ki until the system oscillates. Set Ki to half this value.
 
 The result will not be optimal, but ought to work. Autotune is preferred.
 
@@ -206,7 +221,7 @@ Up to 4 BMP280 boards can be connected in headers H1..H4.
 - H3: optional, pressure at nozzle 1
 - H4: optional, pressure at nozzle 2
 
-The minimal configuration is sensors at H1 and H2.
+The minimal configuration is sensors at H1 and H2. There is no need to calibrate the sensors; the sensors are calibrated at the factory.
 
 #### Vacuum Pump
  Connect a 12V DC brushless vacuum pump. Maximum current of the TB6612 driver is 1A continuous.
@@ -222,6 +237,8 @@ The minimal configuration is sensors at H1 and H2.
  - black (-) to GND
  - PWM input to AO1
  - Tacho output does not need to be connected 
+
+On a Parker D1001-23-01 vacuum pump, wire colors are: red 12V, black ground, PWM white, tacho blue. Check pump datasheet before connecting.
 
 #### Solenoid valve
 
@@ -247,14 +264,28 @@ The footswitch connects using a 3.5mm jack, as used in earphones. Connections ar
 - Ring: NC Normally closed
 - Shield: Common
 
+The console prints ``footswitch`` if a footswitch is detected.
 The controller does switch debouncing.
 
 ## Hardware
 *work in progress*
 
+The board is 2 layer, 55 x 55 mm.
+
+## Sensors
+*work in progress*
+
+The pressure sensor consists of a bmp280 module, sealed inside a 3d-printed housing.
+
+The housing has been designed using OpenSCAD.
+
+The tube is 6mm outside diameter, 4 mm inside diameter PU. Housing is sealed using silicone rubber. After applying the silicone rubber, wet your finger in liquid dishwasher detergent to gently push the silicone rubber into shape.
+
+Test the sensor works *before* you seal the housing.
+
 ## Software
 
-The software is an Arduino sketch, compiled with the STM32duino board support package. Sources are available on (git)[https://github.com/koendv/vacuum-pump-controller/tree/main/vacuumcontroller]. There's also a backup of the Arduino libraries used.
+The software is an Arduino sketch, compiled with the STM32duino board support package. Sources are available on [git](https://github.com/koendv/vacuum-pump-controller/tree/main/vacuumcontroller). There's also a backup of the Arduino libraries used.
 
 ## Firmware
 
@@ -263,7 +294,7 @@ You can compile and upload the firmware from the Arduino IDE, or use the pre-com
 - set Blue Pill jumper BOOT0 to 1, BOOT1 to 0.
 - reset or power cycle the Blue Pill
 - connect a usb-serial converter to header H5, pins GND, TXD, RXD.
-- upload the firmware. In the Arduino IDE, choose Sketch->Upload. If uploading from the command line, use ```//usr/bin/stm32flash -g 0x8000000 -b 115200 -w vacuumcontroller.ino.bin /dev/ttyUSB0
+- upload the firmware. In the Arduino IDE, choose Sketch->Upload. If uploading from the command line, use ```/usr/bin/stm32flash -g 0x8000000 -b 115200 -w vacuumcontroller.ino.bin /dev/ttyUSB0
 ```
 , replacing USB0 with the device of the usb-serial converter.
 - set Blue Pill jumper BOOT0 to 0, BOOT1 to 0.
