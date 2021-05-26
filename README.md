@@ -117,14 +117,14 @@ Switches logging on or off.
 
 Use the ``w`` command if you want this setting to be saved.
 
-When logging is on, every sample is printed on the console output, in one line:
+When logging is on, every sample is printed on the console output, in one line, e.g.:
 ```
         1743075 52417   93876   83764   93926   0       2067058
 ```
 The fields are:
 - time since boot in milliseconds
 - motor PWM; a value from 0 to 65535.
-- pressure 1, 2, 3, 4 in Pa.
+- pressure of sensor 1, 2, 3, 4 in Pa.
 - a checksum that is the 32 bit sum of the 6 previous numbers. 
 
 The line begins with a tab character, and numbers are separated by a tab character. If you parse console output, check for lines that begin with a tab. 
@@ -168,7 +168,7 @@ enter w to save
 
 After *autotune*, if the calculated settings seem correct, use ``w`` to store these settings in non-volatile memory. If you choose not to save, the old settings will be restored after the next reset or power cycle.
 
-Run *autotune* again if the system has changed, a different vacuum pump or vacuum vessel has been installed.
+Run *autotune* again if the system has changed, firmware has been updated, a different vacuum pump or vacuum vessel has been installed.
  
 #### Write 
 The ``w`` write command saves Kp, Ki, Kd, setpoint, and logging to non-volatile memory. The saved values will be restored on power-up.
@@ -294,9 +294,7 @@ You can compile and upload the firmware from the Arduino IDE, or use the pre-com
 - set Blue Pill jumper BOOT0 to 1, BOOT1 to 0.
 - reset or power cycle the Blue Pill
 - connect a usb-serial converter to header H5, pins GND, TXD, RXD.
-- upload the firmware. In the Arduino IDE, choose Sketch->Upload. If uploading from the command line, use ```/usr/bin/stm32flash -g 0x8000000 -b 115200 -w vacuumcontroller.ino.bin /dev/ttyUSB0
-```
-, replacing USB0 with the device of the usb-serial converter.
+- upload the firmware. In the Arduino IDE, choose Sketch->Upload. If uploading from the command line, use ```/usr/bin/stm32flash -g 0x8000000 -b 115200 -w vacuumcontroller.ino.bin /dev/ttyUSB0```, replacing USB0 with the device of the usb-serial converter.
 - set Blue Pill jumper BOOT0 to 0, BOOT1 to 0.
 - reset or power cycle the Blue Pill
 
