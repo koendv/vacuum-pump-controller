@@ -64,7 +64,7 @@ setpoint hPa: 100.00 Kp: 150.00 Ki: 50.00 Kd: 0.00 logging: 0
 pressure hPa: 938.86 838.89 939.41 0.00 
 sensors ok  ok  ok  -
 ```
-We have three sensors. The first sensor measures atmospheric pressure; the second sensor measures the pressure in the vacuum vat; the third measures the pressure at the nozzle. The vacuum is the difference between the first and the second sensor. All pressures are in hPa. Atmospheric pressure is around 1000 hPa.
+In this case, there are three sensors. The first sensor measures atmospheric pressure; the second sensor measures the pressure in the vacuum vat; the third measures the pressure at the nozzle. The vacuum is the difference between the first and the second sensor. All pressures are in hPa. Atmospheric pressure is around 1000 hPa.
 
 *vacuum* is the measured value. *motor* is PWM, in percent. *mode* is *auto* if running the PID controller; *manual* if the motor PWM has been set using the ``m`` command.
 
@@ -126,6 +126,7 @@ The fields are:
 - motor PWM; a value from 0 to 65535.
 - pressure of sensor 1, 2, 3, 4 in Pa.
 - a checksum that is the 32 bit sum of the 6 previous numbers. 
+This format can be imported in a spreadsheet.
 
 The line begins with a tab character, and numbers are separated by a tab character. If you parse console output, check for lines that begin with a tab. 
 
@@ -254,7 +255,7 @@ If there is a second solenoid valve, connect:
  
 ### Footswitch
 
-![](https://raw.githubusercontent.com/koendv/paste_dispenser/master/doc/footswitch.jpg)
+[![screenshot](images/footswitch_small.jpg)](https://raw.githubusercontent.com/koendv/vacuum-pump-controller/master/images/footswitch_big.jpg)
 
 The optional footswitch can be used to switch the first solenoid valve on and off.
 
@@ -264,18 +265,45 @@ The footswitch connects using a 3.5mm jack, as used in earphones. Connections ar
 - Ring: NC Normally closed
 - Shield: Common
 
-The console prints ``footswitch`` if a footswitch is detected.
+The console prints ``footswitch`` when a footswitch is detected.
 The controller does switch debouncing.
 
 ## Hardware
-*work in progress*
+The board is built around an STM32F103 *Blue Pill*. The microcontroller reads the pressure from the BME280 sensors, runs a PID controller algorithm, and sets PWM on the TB6612FNG to control the speed of the vacuum pump.
+
+- [schematic](doc/schematic.pdf)
+- [pcb top](doc/pcb_top.pdf)
+- [pcb bottom](doc/pcb_bottom.pdf)
 
 The board is 2 layer, 55 x 55 mm.
 
+### Bill of Materials
+
+Off-the-shelf parts:
+
+| | description |
+|---|---|
+|1 | [STM32F103xx](https://www.aliexpress.com/item/32525208361.html) controller board, 128kbyte flash.
+|4 | [BMP280 3.3V pressure sensor](https://www.aliexpress.com/item/4000587263474.html)
+|1 | [TB6612FNG dual motor driver](https://www.aliexpress.com/item/32978024026.html)
+|1 | [OLED 128x64, SPI, 7pin, SSD1306, yellow/blue](https://www.aliexpress.com/item/32638662748.html)
+|1 | DC005 DC jack
+|1 | PJ-320 3.5 mm audio jack, 3 pin, through-hole
+|1 | 47u/25V capacitor
+
+FDM 3D-printed parts:
+
+- 3 x pressure sensor housing
+
 ## Sensors
-*work in progress*
+
+[![screenshot](images/sensor_assembly_small.jpg)](https://raw.githubusercontent.com/koendv/vacuum-pump-controller/master/images/sensor_assembly_big.jpg)
+
+*work in progress - still have to add Openscad sources*
 
 The pressure sensor consists of a bmp280 module, sealed inside a 3d-printed housing.
+
+When looking at the BMP280-3.3V pressure sensor module, the contacts are, from left to right: SDO, CSB, SDA, SCL, GND, VCC.
 
 The housing has been designed using OpenSCAD.
 
