@@ -1,16 +1,17 @@
 /*
- * box for BME280 vacuum sensor modules, pcb size 16x12 mm.
+ * box for BMP280 pressure sensor modules GY-BMP280-3.3, pcb size 16x12 mm.
  *
  * Slide the sensor module in at the top of the box, pressure sensor
- * facing the hole in the front of the box, connecting cable up.  
+ * facing the hole in the front of the box, connecting cable up.
  * Put 6mm diameter pneumatic tubing in the hole in the front of the box.
- * Seal top and front with melt glue. 
+ * Put workpiece "lid" on top, with cable through slot in workpiece.
+ * Seal top and front with silicon rubber.
  */
-include <util.scad> 
- 
+include <util.scad>
+
 eps1 = 0.001;
 eps2 = 2*eps1;
-$fn=32;
+$fn=$preview ? 32 : 64;
 nozzle_size = 0.4;
 wall = 3.2;
 
@@ -24,11 +25,11 @@ tube_dia = 6.0;
 tube_x = pcb_x/2;
 tube_y = -pcb_y/2-wall+nozzle_size;
 tube_z = pcb_z/2+wall;
- 
+
 screw_hole = 3.2;
 screw_offset = pcb_y/2 + 4*wall + screw_hole/2;
 washer_dia = 5.2;
- 
+
 module box() {
     difference() {
         box_body();
@@ -41,7 +42,7 @@ module box_body() {
     linear_extrude(box_z)
     offset(2*wall)
     square([pcb_x, pcb_y]);
-    
+
     /* tab for screw */
     hull() {
         translate([pcb_x/2, 0, screw_offset+wall])
@@ -55,31 +56,31 @@ module box_body() {
             circle(d=washer_dia);
         }
     }
-    
+
     /* tube */
     tube_body();
-    
+
 }
 
 module box_holes() {
     translate([0,0,wall+pcb_z+wall])
     linear_extrude(pcb_z+2*wall)
     offset(wall)
-    square([pcb_x, pcb_y]);   
-    
+    square([pcb_x, pcb_y]);
+
     translate([0,0,wall])
     linear_extrude(pcb_z+2*wall)
     offset(nozzle_size)
     square([pcb_x, pcb_y]);
-    
+
     translate([pcb_x/2,screw_offset, -pcb_z])
     linear_extrude(2*pcb_z)
     circle(d=screw_hole);
-    
+
     translate([pcb_x/2,screw_offset, wall])
     linear_extrude(2*pcb_z)
     circle(d=washer_dia);
-    
+
     tube_hole();
 
 }
