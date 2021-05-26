@@ -1,6 +1,6 @@
 # vacuum-controller
 
-[![screenshot](images/vacuum_pump_controller_with_sensor_small.jpg)](https://raw.githubusercontent.com/koendv/vacuum-controller/master/images/vacuum_pump_controller_with_sensor_big.jpg)
+[![screenshot](images/vacuum_pump_controller_with_sensor_small.jpg)](https://raw.githubusercontent.com/koendv/vacuum-pump-controller/master/images/vacuum_pump_controller_with_sensor_big.jpg)
 
 This is a controller for a vacuum pump, useful in pick-and-place machines. The controller adjusts the rpm of a vacuum pump to maintain a constant vacuum. The controller can be used over usb, as part of a pick-and-place machine, or standalone, with a footswitch.
 
@@ -26,11 +26,11 @@ The ``sensors`` line indicates sensor status:
 
 - ``ok`` sensor detected and running
 - ``-`` no sensor detected
-- ``?`` bmp280 sensor hangs, or sensor is wrong type (not bmp280)
+- ``?`` bmp280 unresponsive, or sensor is wrong type (not bmp280)
 
-All commands are a single character, optionally followed by a number, and terminated with *enter*.
+Every command is briefly described.
 
-#### Help
+#### h - Help
 
  ``h`` *help* prints a command summary:
 
@@ -53,7 +53,9 @@ h help
 >
 ```
 
-#### print status
+All commands are a single character, optionally followed by a number, and terminated with *enter*.
+
+#### ? - print status
 
 ```
 >?
@@ -71,7 +73,7 @@ desired value; *Kp*, *Ki* and *Kd* are controller proportional, integral and der
 
 *pressure* is the pressure from the four sensors, in hPa. If a sensor is not plugged in, the pressure is 0. Lastly, *sensors* is the sensor state. If a sensor says ``?``, check the cable, check the sensor is plugged in right, or power cycle the board.
 
-#### Setpoint
+#### s - Setpoint
 
 The *setpoint* command sets the desired vacuum, in hPa.
 ```
@@ -79,19 +81,32 @@ The *setpoint* command sets the desired vacuum, in hPa.
 ok
 ```
 
-#### Proportional Gain
+#### p - Proportional Gain
 
 Sets the PID controller Kp.
+```
+>p150.0
+ok
+```
 
-#### Integral Gain
+#### i - Integral Gain
 
 Sets the PID controller Ki.
+```
+>i50.0
+ok
+```
 
-#### Derivative Gain
+#### d - Derivative Gain
 
 Sets the PID controller Kd. Usually zero.
 
-#### Logging
+```
+>d0
+ok
+```
+
+#### l - Logging
 
 Switches logging on or off.
 
@@ -131,7 +146,7 @@ Sets the motor PWM manually. Value is a number from 0 to 100, inclusive.
 
 #### Autotune
 
-*Autotune* runs the pump at full speed, and measures how pressure changes. From this measurement values for Kp, Ki and Kd are calculated. 
+*Autotune* measures the step response. From this measurement values for Kp, Ki and Kd are calculated using (lambda tuning)[https://www.controleng.com/articles/fundamentals-of-lambda-tuning/]
 
 ```
 >a
@@ -151,7 +166,7 @@ enter w to save
 
 After *autotune*, if the calculated settings seem correct, use ``w`` to store these settings in non-volatile memory.
 
-Run *autotune* again if something has changed; e.g. a different vacuum pump or vacuum vessel.
+Run *autotune* again if the system has changed, a different vacuum pump or vacuum vessel has been installed.
  
 #### Write 
 The ``w`` write command saves Kp, Ki, Kd, setpoint, and logging to non-volatile memory. The saved values will be restored on power-up.
@@ -167,6 +182,16 @@ compiled May 24 2021
 11312 bytes free
 13 ms slowest loop
 ```
+
+### Manual Controller Tuning
+
+If, instead of autotune, you wish to *manually* tune the controller, try the following:
+
+- set Kp, Ki, Kd to 0
+- increase Kp until the system oscillates. Halve the value of Kp.
+- increase Ki until the system oscillates. Halve the value of Ki.
+
+The result will not be optimal, but ought to work. Autotune is preferred.
 
 ### Connections
 
@@ -224,7 +249,28 @@ The footswitch connects using a 3.5mm jack, as used in earphones. Connections ar
 
 The controller does switch debouncing.
 
-## Building
+## Hardware
 *work in progress*
- 
+
+## Software
+
+The software is an Arduino sketch, compiled with the STM32duino board support package. Sources are available on (git)[https://github.com/koendv/vacuum-pump-controller/tree/main/vacuumcontroller]. There's also a backup of the Arduino libraries used.
+
+## Firmware
+
+You can compile and upload the firmware from the Arduino IDE, or use the pre-compiled binaries and upload from the command line. To upload the firmware:
+
+- set Blue Pill jumper BOOT0 to 1, BOOT1 to 0.
+- reset or power cycle the Blue Pill
+- connect a usb-serial converter to header H5, pins GND, TXD, RXD.
+- upload the firmware. In the Arduino IDE, choose Sketch->Upload. If uploading from the command line, use ```//usr/bin/stm32flash -g 0x8000000 -b 115200 -w vacuumcontroller.ino.bin /dev/ttyUSB0
+```
+, replacing USB0 with the device of the usb-serial converter.
+- set Blue Pill jumper BOOT0 to 0, BOOT1 to 0.
+- reset or power cycle the Blue Pill
+
+With the firmware installed, led of the Blue Pill ought to flash briefly every 5 seconds. Also, the console of the vacuum controller ought to appear as a usb serial port, on linux typically ``/dev/ttyACM0``.
+
+## Links
+
 [oshw project page](https://oshwlab.com/koendv/vacuum-pump-controller)
