@@ -239,7 +239,7 @@ The minimal configuration is sensors at H1 and H2. There is no need to calibrate
  - PWM input to AO1
  - Tacho output does not need to be connected 
 
-On a Parker D1001-23-01 vacuum pump, wire colors are: red 12V, black ground, PWM white, tacho blue. Check pump datasheet before connecting.
+On a Parker D1001-23-01 vacuum pump, wire colors are: red 12V, black ground, white PWM, blue tacho. Check datasheet before connecting.
 
 #### Solenoid valve
 
@@ -269,6 +269,9 @@ The console prints ``footswitch`` when a footswitch is detected.
 The controller does switch debouncing.
 
 ## Hardware
+
+[![screenshot](images/vacuum_pump_controller_small.jpg)](https://raw.githubusercontent.com/koendv/vacuum-pump-controller/master/images/vacuum_pump_controller_big.jpg)
+
 The board is built around an STM32F103 *Blue Pill*. The microcontroller reads the pressure from the BME280 sensors, runs a PID controller algorithm, and sets PWM on the TB6612FNG to control the speed of the vacuum pump.
 
 - [schematic](doc/schematic.pdf)
@@ -289,7 +292,7 @@ Off-the-shelf parts:
 |1 | [TB6612FNG dual motor driver](https://www.aliexpress.com/item/32978024026.html)
 |1 | [OLED 128x64, SPI, 7pin, SSD1306, yellow/blue](https://www.aliexpress.com/item/32638662748.html)
 |1 | DC005 DC jack
-|1 | PJ-320 3.5 mm audio jack, 3 pin, through-hole
+|1 | PJ-320A 3.5 mm audio jack, 4 pin, through-hole
 |1 | 47u/25V capacitor
 
 FDM 3D-printed parts:
