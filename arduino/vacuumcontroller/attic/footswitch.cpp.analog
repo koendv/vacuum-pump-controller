@@ -1,0 +1,43 @@
+#include "footswitch.h"
+#include "pidctrl.h"
+#include "settings.h"
+
+/* analog footswitch. 
+ * Connect one end of potentiometer to sleeve; 
+ * other end to ring1 (set to 3.3V below),
+ * wiper to tip.
+ * potentiometer e.g. 10k
+ */
+// footswitch connector contacts
+#define PIN_FTSW_TIP PA3
+#define PIN_FTSW_R1 PC15
+#define PIN_FTSW_R2 PC14
+
+namespace footswitch {
+static uint32_t lastTimeMillis = 0;
+const uint32_t sampleTimeMillis = 10;
+
+void setup() {
+  pinMode(PIN_FTSW_TIP, INPUT_ANALOG);
+  pinMode(PIN_FTSW_R1, OUTPUT);
+  digitalWrite(PIN_FTSW_R1, HIGH);
+  pinMode(PIN_FTSW_R2, INPUT_PULLUP);
+  lastTimeMillis = millis();
+  return;
+}
+
+void loop() {
+  uint32_t nowMillis = millis();
+  if ((nowMillis < lastTimeMillis) || (nowMillis >= lastTimeMillis + sampleTimeMillis)) {
+    uint32_t ftsw_val = analogRead(PIN_FTSW_TIP);
+    // set pressure
+    // float setpoint_val = map(ftsw_val, 0, 1023, 500, 1000);
+    // settings::setpoint = setpoint_val;
+    // set speed
+    float motor_pwm = map(ftsw_val, 0, 1023, 0, 65535);
+    PIDctrl::manual(motor_pwm);
+    lastTimeMillis = nowMillis;
+  }
+}
+} // namespace footswitch
+// not truncated
