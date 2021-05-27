@@ -1,22 +1,23 @@
 #include "footswitch.h"
 #include "motor.h"
 
-// footswitch pins. footswitch has two contacts.
-// one contact is normally open, one contact is normally closed.
-#define PIN_FTSW_NO PC15
-#define PIN_FTSW_NC PC14
+// footswitch connector contacts
+#define PIN_FTSW_TIP PA3
+#define PIN_FTSW_R1 PC15
+#define PIN_FTSW_R2 PC14
 
 namespace footswitch {
 static uint32_t lastTimeMillis = 0;
-const uint32_t sampleTimeMillis = 5;
+const uint32_t sampleTimeMillis = 10;
 enum state_enum { FTSW_INIT,
                   FTSW_ON,
                   FTSW_OFF };
 state_enum ftsw_state;
 
 void setup() {
-  pinMode(PIN_FTSW_NO, INPUT_PULLUP);
-  pinMode(PIN_FTSW_NC, INPUT_PULLUP);
+  pinMode(PIN_FTSW_TIP, INPUT_PULLUP);
+  pinMode(PIN_FTSW_R1, INPUT_PULLUP);
+  pinMode(PIN_FTSW_R2, INPUT_PULLUP);
   ftsw_state = FTSW_INIT;
   lastTimeMillis = millis();
   return;
@@ -25,8 +26,11 @@ void setup() {
 void loop() {
   uint32_t nowMillis = millis();
   if ((nowMillis < lastTimeMillis) || (nowMillis >= lastTimeMillis + sampleTimeMillis)) {
-    bool ftsw_no = digitalRead(PIN_FTSW_NO); // footswitch contact normally open
-    bool ftsw_nc = digitalRead(PIN_FTSW_NC); // footswitch contact normally closed
+    // footswitch pins. footswitch has two contacts.
+    // one contact is normally open, one contact is normally closed.
+    bool ftsw_no = digitalRead(PIN_FTSW_TIP); // footswitch contact normally open
+    bool ftsw_nc = digitalRead(PIN_FTSW_R1);  // footswitch contact normally closed
+    // contact debouncing
     bool ftsw_on = ftsw_no && !ftsw_nc;
     bool ftsw_off = !ftsw_no && ftsw_nc;
     switch (ftsw_state) {
