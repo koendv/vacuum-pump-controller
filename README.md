@@ -338,5 +338,5 @@ Download Gerbers for pcb manufacturing, stl files for 3d printing, and firmware 
 
 ## Links
 
-[oshw project page](https://oshwlab.com/koendv/vacuum-pump-controller)
-[developer notes](README_DEVELOPER.md)
+- [oshw project page](https://oshwlab.com/koendv/vacuum-pump-controller)
+- [developer notes](README_DEVELOPER.md)
