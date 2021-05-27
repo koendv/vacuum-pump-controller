@@ -257,22 +257,22 @@ If there is a second solenoid valve, connect:
 
 [![screenshot](images/footswitch_small.jpg)](https://raw.githubusercontent.com/koendv/vacuum-pump-controller/master/images/footswitch_big.jpg)
 
-The optional footswitch can be used to switch the first solenoid valve on and off.
+Sometimes a small, standalone tool is preferred. The optional footswitch can be used to switch the first solenoid valve on and off.
 
-The footswitch connects using a 3.5mm jack, as used in earphones. Connections are:
+The footswitch connects using a 3.5mm TRRS jack. Solder a cable from an old mobile phone earset to an SPDT footswitch. Connections are:
 
 - Tip: NO Normally open
-- Ring: NC Normally closed
+- Ring1: NC Normally closed
+- Ring2: unused
 - Shield: Common
 
 The console prints ``footswitch`` when a footswitch is detected.
-The controller does switch debouncing.
 
 ## Hardware
 
 [![screenshot](images/vacuum_pump_controller_small.jpg)](https://raw.githubusercontent.com/koendv/vacuum-pump-controller/master/images/vacuum_pump_controller_big.jpg)
 
-The board is built around an STM32F103 *Blue Pill*. The microcontroller reads the pressure from the BME280 sensors, runs a PID controller algorithm, and sets PWM on the TB6612FNG to control the speed of the vacuum pump.
+The board is built around an STM32F103 *Blue Pill*. The microcontroller reads the pressure from the BME280 sensors, runs a PID controller algorithm, and sets PWM on a TB6612FNG driver to control the speed of the vacuum pump.
 
 - [schematic](doc/schematic.pdf)
 - [pcb top](doc/pcb_top.pdf)
