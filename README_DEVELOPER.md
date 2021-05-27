@@ -24,7 +24,7 @@ The sensors do not have a reset pin. If this is a problem for long-term stabilit
 
 The footswitch connector has one digital/analog and two digital contacts. 
 
-If you wish to connect an analogue footswitch (like those used on sewing machines) the hardware is there. 
+If you wish to connect an analogue footswitch (like those used on sewing machines) there is source in [footswitch.cpp.analog](arduino/vacuumcontroller/attic/footswitch.cpp.analog)
 
 ## Autotuning
 
