@@ -10,7 +10,7 @@ The software allows hot-plugging the sensors.
 
 Plugging in a sensor is detected by setting the chip select pin to INPUT_PULLDOWN and reading the pin status. When a sensor is present chip select pin will be pulled high.
 
-A removed sensor is detected by trying to read the chip id over spi, and checking chip id is unchanged.
+A removed sensor is detected by trying to read the chip id over spi, and finding the chip id has changed.
 
 ## Hardware
 
