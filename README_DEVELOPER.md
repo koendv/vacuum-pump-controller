@@ -36,7 +36,9 @@ The algorithm used is the following:
 Beginning with pressure 0 and pwm 0, slowly increase pwm until pressure increases. Note this data as (minpwm, minpressure).
 - Find the steady-state pressure.
 Set the motor to full 12V (100% PWM), and wait until pressure no longer increases. Note this data as (maxpwm, maxpressure).
-- Draw a line through the two points (minpwm, minpressure) and (maxpwm, maxpressure) and calculate the slope. The PID controller proportional gain is set to the slope, divided by a safety factor 3: <img src="https://render.githubusercontent.com/render/math?math=K_{p}= \frac{1}{3}\cdot\frac{maxpwm-minpwm}{maxpressure-minpressure}">
+- Draw a line through the two points (minpwm, minpressure) and (maxpwm, maxpressure) and calculate the slope. The PID controller proportional gain is set to the slope, divided by a safety factor 3:
+
+<img src="https://render.githubusercontent.com/render/math?math=K_{p}= \frac{1}{3}\cdot\frac{maxpwm-minpwm}{maxpressure-minpressure}">
 
 - An exponentially dampened process <img src="https://render.githubusercontent.com/render/math?math=y(t)=1-e^{-\frac{t}{\tau}}">
 reaches value 0.63 at t = &tau;. Beginning with pressure 0 and pwm 0, set the vacuum pump at full 12V (100% PWM), and measure the time for pressure to reach 63% of steady-state pressure:
