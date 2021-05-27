@@ -332,6 +332,10 @@ You can compile and upload the firmware from the Arduino IDE, or use the pre-com
 
 With the firmware installed, led of the Blue Pill ought to flash briefly every 5 seconds. Also, the console of the vacuum controller ought to appear as a usb serial port, on linux typically ``/dev/ttyACM0``.
 
+## Download
+
+Download Gerbers for pcb manufacturing, stl files for 3d printing, and firmware for the microcontroller from [releases](releases)
+
 ## Links
 
 [oshw project page](https://oshwlab.com/koendv/vacuum-pump-controller)
