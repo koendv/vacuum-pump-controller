@@ -8,9 +8,9 @@ Goal is stable, steady vacuum at low cost.
 
 The software allows hot-plugging the sensors. 
 
-Plugging in a sensor is detected by setting the chip select pin to INPUT_PULLDOWN. When a sensor is present chip select pin will be pulled high.
+Plugging in a sensor is detected by setting the chip select pin to INPUT_PULLDOWN and reading the pin status. When a sensor is present chip select pin will be pulled high.
 
-A removed sensor is detected by trying to read the chip id, and checking chip id is unchanged.
+A removed sensor is detected by trying to read the chip id over spi, and checking chip id is unchanged.
 
 ## Hardware
 
@@ -58,7 +58,7 @@ The safety factor can be tuned a little to trade off stability for accuracy, if 
 
 Total savings: 11463 bytes flash
 
-- Use font ``Veranda24ptDigits.h`` for oled, as open source version of. This is the font *Veranda24pt*, characters ``-./01234567890:`` only. This is sufficient to print positive and negative integers and floats, and the time. Veranda24ptDigits font size is 1223 bytes. Saves 7643 bytes flash compared to the full *Veranda24pt* font. The open source *Veranda24pt* font is similar to the commercial *Verdana24pt*.
+- Use font ``Veranda24ptDigits.h``. This is the font *Veranda24pt*, characters ``-./01234567890:`` only. This is sufficient to print positive and negative integers and floats, and the time. *Veranda24ptDigits* font size is 1223 bytes. This saves 7643 bytes flash compared to the full *Veranda24pt* font. The open source *Veranda24pt* font is similar to the commercial *Verdana24pt*.
 
 - Disable support for unused Serial1 port. The serial port is only used for initial firmware upload. 
   *Tools -> U(S)ART support -> Disabled (no Serial support)*

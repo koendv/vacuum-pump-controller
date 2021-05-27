@@ -272,7 +272,7 @@ The console prints ``footswitch`` when a footswitch is detected.
 
 [![screenshot](images/vacuum_pump_controller_small.jpg)](https://raw.githubusercontent.com/koendv/vacuum-pump-controller/master/images/vacuum_pump_controller_big.jpg)
 
-The board is built around an STM32F103 *Blue Pill*. The microcontroller reads the pressure from the BME280 sensors, runs a PID controller algorithm, and sets PWM on a TB6612FNG driver to control the speed of the vacuum pump.
+The board is built around an STM32F103 *Blue Pill*. The microcontroller reads the pressure from the BMP280 sensors, runs a PID controller algorithm, and sets PWM on a TB6612FNG driver to control the speed of the vacuum pump.
 
 - [schematic](doc/schematic.pdf)
 - [pcb top](doc/pcb_top.pdf)
@@ -324,7 +324,9 @@ You can compile and upload the firmware from the Arduino IDE, or use the pre-com
 - set Blue Pill jumper BOOT0 to 1, BOOT1 to 0.
 - reset or power cycle the Blue Pill
 - connect a usb-serial converter to header H5, pins GND, TXD, RXD.
-- upload the firmware. In the Arduino IDE, choose Sketch->Upload. If uploading from the command line, use ```/usr/bin/stm32flash -g 0x8000000 -b 115200 -w vacuumcontroller.ino.bin /dev/ttyUSB0```, replacing USB0 with the device of the usb-serial converter.
+- upload the firmware.
+    - If using the Arduino IDE, choose *Sketch->Upload*.
+    - If uploading from the command line, use ```/usr/bin/stm32flash -g 0x8000000 -b 115200 -w vacuumcontroller.ino.bin /dev/ttyUSB0```, replacing USB0 with the device of the usb-serial converter.
 - set Blue Pill jumper BOOT0 to 0, BOOT1 to 0.
 - reset or power cycle the Blue Pill
 
