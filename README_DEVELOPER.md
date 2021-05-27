@@ -36,13 +36,10 @@ The algorithm used is the following:
 Beginning with pressure 0 and pwm 0, slowly increase pwm until pressure increases. Note this data as (minpwm, minpressure).
 - Find the steady-state pressure.
 Set the motor to full 12V (100% PWM), and wait until pressure no longer increases. Note this data as (maxpwm, maxpressure).
-- Draw a line through the two points (minpwm, minpressure) and (maxpwm, maxpressure) and calculate the slope. The PID controller proportional gain is set to the slope, divided by a safety factor 3:
+- Draw a line through the two points (minpwm, minpressure) and (maxpwm, maxpressure) and calculate the slope. The PID controller proportional gain is set to the slope, divided by a safety factor 3: <img src="https://render.githubusercontent.com/render/math?math=K_{p}= \frac{1}{3}\cdot\frac{maxpwm-minpwm}{maxpressure-minpressure}">
 
-<img src="https://render.githubusercontent.com/render/math?math=K_{p}= \frac{1}{3}\cdot\frac{maxpwm-minpwm}{maxpressure-minpressure}">
-
-- An exponentially dampened process
-<img src="https://render.githubusercontent.com/render/math?math=y(t)=1-e^{-\frac{t}{\tau}}">
-reaches value 0.63 at <img src="https://render.githubusercontent.com/render/math?math=t=\tau">. Beginning with pressure 0 and pwm 0, set the vacuum pump at full 12V (100% PWM), and measure the time for pressure to reach 63% of steady-state pressure:
+- An exponentially dampened process <img src="https://render.githubusercontent.com/render/math?math=y(t)=1-e^{-\frac{t}{\tau}}">
+reaches value 0.63 at t = &tau;. Beginning with pressure 0 and pwm 0, set the vacuum pump at full 12V (100% PWM), and measure the time for pressure to reach 63% of steady-state pressure:
 <img src="https://render.githubusercontent.com/render/math?math=pressure=minpressure\%2b{0.63}\cdot(maxpressure-minpressure)">
 This time measurement gives the time constant &tau;. The PID controller integral gain is set at
  
@@ -58,7 +55,7 @@ The safety factor can be tuned a little to trade off stability for accuracy, if 
 
 Total savings: 11463 bytes flash
 
-- Use font ``Veranda24ptDigits.h``. This is the font *Veranda24pt*, characters ``-./01234567890:`` only. This is sufficient to print positive and negative integers and floats, and the time. *Veranda24ptDigits* font size is 1223 bytes. This saves 7643 bytes flash compared to the full *Veranda24pt* font. The open source *Veranda24pt* font is similar to the commercial *Verdana24pt*.
+- Use font ``Veranda24ptDigits.h`` for oled, as open source version of. This is the font *Veranda24pt*, characters ``-./01234567890:`` only. This is sufficient to print positive and negative integers and floats, and the time. Veranda24ptDigits font size is 1223 bytes. Saves 7643 bytes flash compared to the full *Veranda24pt* font. The open source *Veranda24pt* font is similar to the commercial *Verdana24pt*.
 
 - Disable support for unused Serial1 port. The serial port is only used for initial firmware upload. 
   *Tools -> U(S)ART support -> Disabled (no Serial support)*

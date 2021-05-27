@@ -15,7 +15,7 @@
 
 namespace footswitch {
 static uint32_t lastTimeMillis = 0;
-const uint32_t sampleTimeMillis = 10;
+const uint32_t sampleTimeMillis = 100;
 
 void setup() {
   pinMode(PIN_FTSW_TIP, INPUT_ANALOG);
