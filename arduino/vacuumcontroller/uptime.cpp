@@ -11,9 +11,9 @@ void setup() {
 
 // print uptime
 void print() {
-  uint32_t days = rtc.getDay() - 1; // max. 30d
-  uint32_t hours = rtc.getHours();
-  uint32_t mins = rtc.getMinutes();
+  uint8_t days = rtc.getDay() - 1; // wraps after 30 days
+  uint8_t hours, minutes;
+  rtc.getTime(&hours, &minutes, NULL, NULL, NULL);
   Serial.print("up ");
   if (days > 0) {
     Serial.print(days);
@@ -21,9 +21,9 @@ void print() {
   }
   Serial.print(hours);
   Serial.print(':');
-  if (mins < 10)
+  if (minutes < 10)
     Serial.print('0');
-  Serial.println(mins);
+  Serial.println(minutes);
 }
 } // namespace uptime
 // not truncated
