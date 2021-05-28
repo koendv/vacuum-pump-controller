@@ -158,7 +158,7 @@ void doCommand() {
       Serial.print(bytes_free());           // print free ram. helpful for detecting memory leaks.
       Serial.println(" bytes free");
       Serial.print(loopstats::slowest_loop()); // time of slowest loop(), in ms
-      Serial.println(" ms / loop");
+      Serial.println(" ms slowest loop");
       ok = false;
       break;
     case 'h': // help
