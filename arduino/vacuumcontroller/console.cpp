@@ -7,6 +7,7 @@
 #include "pidctrl.h"
 #include "sensor.h"
 #include "settings.h"
+#include "uptime.h"
 #include "watchdog.h"
 #include <Arduino.h>
 
@@ -153,6 +154,7 @@ void doCommand() {
       break;
     case 'f':
       Serial.println("compiled " __DATE__); // print firmware version. helpful for support.
+      uptime::print();                      // print system uptime
       Serial.print(bytes_free());           // print free ram. helpful for detecting memory leaks.
       Serial.println(" bytes free");
       Serial.print(loopstats::slowest_loop()); // time of slowest loop(), in ms

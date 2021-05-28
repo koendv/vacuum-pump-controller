@@ -27,11 +27,13 @@
 #include "pidctrl.h"
 #include "sensor.h"
 #include "settings.h"
+#include "uptime.h"
 #include "watchdog.h"
 
 void setup() {
   console::setup(); // open usb serial
   watchdog::setup();
+  uptime::setup();
   breathingLed::setup();
   settings::setup();
   display::setup();
