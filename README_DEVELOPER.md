@@ -22,7 +22,7 @@ The sensors do not have a reset pin. If this is a problem for long-term stabilit
 
 ## Footswitch
 
-The footswitch connector has one digital/analog and two digital contacts. 
+The footswitch connector has one digital/analog and two digital contacts. The controller works with a SPDT footswitch.
 
 If you wish to connect an analogue footswitch (like those used on sewing machines) there is source in [footswitch.cpp.analog](arduino/vacuumcontroller/attic/footswitch.cpp.analog)
 
@@ -55,9 +55,9 @@ The safety factor can be tuned a little to trade off stability for accuracy, if 
 
 ## Ways to save flash
 
-Total savings: 11463 bytes flash
+Simple measures save 11463 bytes flash.
 
-- Use font ``Veranda24ptDigits.h`` for oled, as open source version of. This is the font *Veranda24pt*, characters ``-./01234567890:`` only. This is sufficient to print positive and negative integers and floats, and the time. Veranda24ptDigits font size is 1223 bytes. Saves 7643 bytes flash compared to the full *Veranda24pt* font. The open source *Veranda24pt* font is similar to the commercial *Verdana24pt*.
+- The sketch uses a 24pt bitmap font to display the vacuum on an oled display. Fonts use a lot of flash memory, especially at larger point sizes. Optimize by storing only those characters actually needed. The font ``Veranda24ptDigits.h`` only contains the characters ``-./01234567890:``, sufficient to print positive and negative integers and floats and the time. Font size is 1223 bytes, a saving of 7643 bytes compared to the full font.
 
 - Disable support for unused Serial1 port. The serial port is only used for initial firmware upload. 
   *Tools -> U(S)ART support -> Disabled (no Serial support)*
