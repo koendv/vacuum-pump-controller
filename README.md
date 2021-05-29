@@ -270,6 +270,8 @@ The console prints ``footswitch`` when a footswitch is detected.
 
 ## Display
 
+![oled](doc/display.png)
+
 The display is a yellow/blue oled display, 128x64, SPI, SSD1306 controller. The display is optional; the controller also works without display. The display shows pump, sensors, and vacuum:
 
 - The bargraph at the top shows the pump motor. The larger the bar graph, the harder the motor works.
