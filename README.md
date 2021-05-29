@@ -224,6 +224,8 @@ Up to 4 BMP280 boards can be connected in headers H1..H4.
 
 The minimal configuration is sensors at H1 and H2. There is no need to calibrate the sensors; the sensors are calibrated at the factory.
 
+BMP280 sensors measure pressures from 300 hPa to 1100 hPa.
+
 #### Vacuum Pump
  Connect a 12V DC brushless vacuum pump. Maximum current of the TB6612 driver is 1A continuous.
 
