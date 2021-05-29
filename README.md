@@ -6,9 +6,9 @@ This is a controller for a vacuum pump, useful in pick-and-place machines. The c
 
 ## Features:
 
-- up to 4 x BMP280 pressure sensors: 1 for outside pressure, 1 for vacuum pressure, and 2 for two pick-and-place nozzles. The pressure sensors on the nozzles are used to check whether a component has been picked up or fallen off. 
+- up to 4 x BMP280 pressure sensors: 1 for outside pressure, 1 for vacuum pressure, and 2 for two pick-and-place nozzles. The pressure sensors on the nozzles are used to check whether a component has been picked up or fallen off.
 
-- up to 2 x 3V210-06-NC solenoid valve, one for each pick-and-place nozzle.
+- up to 2 x 12V solenoid valve, one for each pick-and-place nozzle.
 
 ## Usage
 
@@ -61,14 +61,14 @@ All commands are a single character, optionally followed by a number, and termin
 >?
 vacuum hPa: 99.97 motor: 73.60% mode: auto
 setpoint hPa: 100.00 Kp: 150.00 Ki: 50.00 Kd: 0.00 logging: 0
-pressure hPa: 938.86 838.89 939.41 0.00 
+pressure hPa: 938.86 838.89 939.41 0.00
 sensors ok  ok  ok  -
 ```
 In this case, there are three sensors. The first sensor measures atmospheric pressure; the second sensor measures the pressure in the vacuum vat; the third measures the pressure at the nozzle. The vacuum is the difference between the first and the second sensor. All pressures are in hPa. Atmospheric pressure is around 1000 hPa.
 
 *vacuum* is the measured value. *motor* is PWM, in percent. *mode* is *auto* if running the PID controller; *manual* if the motor PWM has been set using the ``m`` command.
 
-The vacuum pump controller is a PID controller. *setpoint* is the 
+The vacuum pump controller is a PID controller. *setpoint* is the
 desired value; *Kp*, *Ki* and *Kd* are controller proportional, integral and derivative gain. It is normal for *Kd* to be zero. If *logging* is non-zero, pressure is logged on the console every 0.1s.
 
 *pressure* is the pressure from the four sensors, in hPa. If a sensor is not plugged in, the pressure is 0.
@@ -125,10 +125,10 @@ The fields are:
 - time since boot in milliseconds
 - motor PWM; a value from 0 to 65535.
 - pressure of sensor 1, 2, 3, 4 in Pa.
-- a checksum that is the 32 bit sum of the 6 previous numbers. 
+- a checksum that is the 32 bit sum of the 6 previous numbers.
 This format can be imported in a spreadsheet.
 
-The line begins with a tab character, and numbers are separated by a tab character. If you parse console output, check for lines that begin with a tab. 
+The line begins with a tab character, and numbers are separated by a tab character. If you parse console output, check for lines that begin with a tab.
 
 #### Valve
 
@@ -170,8 +170,8 @@ enter w to save
 After *autotune*, if the calculated settings seem correct, use ``w`` to store these settings in non-volatile memory. If you choose not to save, the old settings will be restored after the next reset or power cycle.
 
 Run *autotune* again if the system has changed, firmware has been updated, a different vacuum pump or vacuum vessel has been installed.
- 
-#### Write 
+
+#### Write
 The ``w`` write command saves Kp, Ki, Kd, setpoint, and logging to non-volatile memory. The saved values will be restored on power-up.
 
 ```
@@ -185,7 +185,7 @@ The ``r`` reset command reboots the controller.
 ```
 >r
 vacuum controller - type h for help
-sensors ok  ok  ok  -  
+sensors ok  ok  ok  -
 ready
 >
 ```
@@ -226,18 +226,18 @@ The minimal configuration is sensors at H1 and H2. There is no need to calibrate
 
 #### Vacuum Pump
  Connect a 12V DC brushless vacuum pump. Maximum current of the TB6612 driver is 1A continuous.
- 
+
  If the vacuum pump has two wires:
- 
+
  - red (+) to AO1
  - black (-) to GND
- 
+
  If the vacuum pump has four wires:
- 
+
  - red (+) to 12V
  - black (-) to GND
  - PWM input to AO1
- - Tacho output does not need to be connected 
+ - Tacho output does not need to be connected
 
 On a Parker D1001-23-01 vacuum pump, wire colors are: red 12V, black ground, white PWM, blue tacho. Check datasheet before connecting.
 
@@ -247,12 +247,12 @@ Connect the first solenoid valve:
 
  - red (+) to B01
  - black (-) to GND
- 
+
 If there is a second solenoid valve, connect:
 
  - red (+) to B02
  - black (-) to GND
- 
+
 ### Footswitch
 
 [![screenshot](images/footswitch_small.jpg)](https://raw.githubusercontent.com/koendv/vacuum-pump-controller/master/images/footswitch_big.jpg)
@@ -268,6 +268,18 @@ The footswitch connects using a 3.5mm TRRS jack. Solder a cable from an old mobi
 
 The console prints ``footswitch`` when a footswitch is detected.
 
+## Display
+
+The display is a yellow/blue oled display, 128x64, SPI, SSD1306 controller. The display is optional and does not need to be plugged in. The display shows pump, sensors, and vacuum:
+
+- The bargraph at the top shows the pump motor. The larger the bar graph, the harder the motor works.
+
+- Next up to four rectangles, one for each sensor that is plugged in. If the rectangle is blue, the sensor is ok; if the rectangle is yellow there is a problem.
+
+- At the bottom the vacuum in hPa. The vacuum is the difference between the first and the second sensor.
+
+To the right there is a small square that blinks slowly to show the display works.
+
 ## Hardware
 
 [![screenshot](images/vacuum_pump_controller_small.jpg)](https://raw.githubusercontent.com/koendv/vacuum-pump-controller/master/images/vacuum_pump_controller_big.jpg)
@@ -277,7 +289,7 @@ The board is built around an STM32F103 *Blue Pill*. The microcontroller reads th
 - [schematic](doc/schematic.pdf)
 - [pcb top](doc/pcb_top.pdf)
 - [pcb bottom](doc/pcb_bottom.pdf)
-- [easyeda/oshw project](https://oshwlab.com/koendv/vacuum-pump-controller). 
+- [easyeda/oshw project](https://oshwlab.com/koendv/vacuum-pump-controller).
 
 The board is 2 layer, 55 x 55 mm.
 
