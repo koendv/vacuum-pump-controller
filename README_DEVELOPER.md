@@ -18,7 +18,7 @@ The electronics have been kept simple, so there is little that can fail. The boa
 
 I've experimented plugging and unplugging sensor and display when connecting over i2c and spi. With spi, worst case is the sensor does not work. With i2c, worst case is the system hangs. Because I want long term stability and unattended functioning I used spi *and* configured a watchdog timer.
 
-The sensors do not have a reset pin. If this is a problem for long-term stability, power the sensors through a AP2112K-3.3 low drop voltage regulator with the voltage regulator enable connected to a processor pin. This way the processor can power cycle the sensors if the sensors need a hard reset.
+The sensors do not have a reset pin. If long-term stability is a problem, power the sensors through a AP2112K-3.3 low drop voltage regulator with the voltage regulator enable connected to a processor pin. This way the processor can power cycle the sensors if the sensors need a hard reset.
 
 ## Footswitch
 
