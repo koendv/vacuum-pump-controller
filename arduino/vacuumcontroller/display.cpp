@@ -78,6 +78,24 @@ void reset() {
   setup();
 }
 
+// print display on console
+// copy and paste output into .pbm file and read using gimp
+void printScreen() {
+  int16_t w = oled.width();
+  int16_t h = oled.height();
+  Serial.println('#');
+  Serial.println("P1");
+  Serial.print(w);
+  Serial.print(' ');
+  Serial.println(h);
+  for (int16_t y = 0; y < h; y++) {
+    for (int16_t x = 0; x < w; x++)
+      Serial.print(oled.getPixel(x, y));
+    Serial.println();
+  }
+  Serial.println('#');
+}
+
 void loop() {
   int vacuum = sensor::vacuum;
   int pwm_bargraph = SCREEN_WIDTH * motor::pwma / MAXPWM;
@@ -117,7 +135,6 @@ void loop() {
     // print vacuum in hPa
     drawRightInt(vacuum, SCREEN_HEIGHT - 2); // print number right aligned
     // alive indicator
-    oled.fillRect(125, 12, 3, 4, blink ? SSD1306_WHITE : SSD1306_BLACK);
     oled.fillRect(125, 16, 3, 4, blink ? SSD1306_BLACK : SSD1306_WHITE);
     // update display
     oled.display();

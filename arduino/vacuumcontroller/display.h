@@ -12,6 +12,7 @@ namespace display {
 extern void reset();
 extern void setup();
 extern void loop();
+extern void printScreen();
 
 } // namespace display
 
