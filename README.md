@@ -178,21 +178,21 @@ Run *autotune* again if firmware has been updated, a vacuum pump or vacuum vesse
 
 The following m-codes are available for easy integration with [openpnp](http://openpnp.org):
 
-| code | description                    |
-| ---- | ------------------------------ |
-| M800 | switch pump on                 |
-| M801 | switch pump off                |
-| M802 | switch nozzle 1 solenoid on    |
-| M803 | switch nozzle 1 solenoid off   |
-| M804 | switch nozzle 2 solenoid on    |
-| M805 | switch nozzle 2 solenoid off   |
-| M900 | read absolute pressure air     |
-| M901 | read absolute pressure pump    |
-| M902 | read absolute pressure nozzle1 |
-| M903 | read absolute pressure nozzle2 |
-| M911 | read vacuum pump               |
-| M912 | read vacuum nozzle1            |
-| M913 | read vacuum nozzle2            |
+| code | description                       |
+| ---- | --------------------------------- |
+| M800 | switch pump on                    |
+| M801 | switch pump off                   |
+| M802 | switch nozzle 1 solenoid on       |
+| M803 | switch nozzle 1 solenoid off      |
+| M804 | switch nozzle 2 solenoid on       |
+| M805 | switch nozzle 2 solenoid off      |
+| M900 | read absolute air pressure        |
+| M901 | read absolute pressure at pump    |
+| M902 | read absolute pressure at nozzle1 |
+| M903 | read absolute pressure at nozzle2 |
+| M911 | read vacuum at pump               |
+| M912 | read vacuum at nozzle1            |
+| M913 | read vacuum at nozzle2            |
 
 Example:
 Switch pump on.
