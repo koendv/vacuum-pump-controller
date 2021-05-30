@@ -166,7 +166,6 @@ void printFirmware() {
   Serial.println(" bytes free");
   Serial.print(loopstats::slowest_loop()); // time of slowest loop(), in ms
   Serial.println(" ms slowest loop");
-  display::printScreen();
 }
 
 bool setValve(int i) {
