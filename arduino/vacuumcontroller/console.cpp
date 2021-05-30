@@ -87,7 +87,7 @@ void m_code(int m) {
   case 901: // M901 read absolute pressure sensor1 (pump)
     m_pressure(m, 1, false);
     break;
-  case 902: // M902 read absolute pressure sensor2 (nozzle1
+  case 902: // M902 read absolute pressure sensor2 (nozzle1)
     m_pressure(m, 2, false);
     break;
   case 903: // M903 read absolute pressure sensor3 (nozzle2)
