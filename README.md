@@ -273,9 +273,12 @@ Up to 4 BMP280 boards can be connected in headers H1..H4.
 - H3: optional, pressure at nozzle 1
 - H4: optional, pressure at nozzle 2
 
-The minimal configuration is sensors at H1 and H2. There is no need to calibrate the sensors; the sensors are calibrated at the factory.
-
+The minimal configuration is sensors at H1 and H2.
 BMP280 sensors measure pressures from 300 hPa to 1100 hPa.
+
+#### Calibration
+
+There is no need to calibrate the sensors; the sensors are calibrated at the factory.
 
 #### Vacuum Pump
  Connect a 12V DC brushless vacuum pump. Maximum current of the TB6612 driver is 1A continuous.
@@ -397,7 +400,7 @@ You can compile and upload the firmware from the Arduino IDE, or use the pre-com
 - set Blue Pill jumper BOOT0 to 0, BOOT1 to 0.
 - reset or power cycle the Blue Pill
 
-With the firmware installed, led of the Blue Pill ought to flash briefly every 5 seconds. Also, the console of the vacuum controller ought to appear as a usb serial port, on linux typically ``/dev/ttyACM0``.
+With the firmware installed, led of the Blue Pill flashes briefly every 5 seconds. The console of the vacuum controller appears as a usb serial port, on linux typically ``/dev/ttyACM0``. If an oled display is attached, the display lights up.
 
 ## Download
 
@@ -405,7 +408,7 @@ Download Gerbers for pcb manufacturing, stl files for 3d printing, and firmware 
 
 ## About
 
-This project was designed on a Raspberry Pi. The sketch was compiled on Raspberry Pi with the [Arduino IDE](https://github.com/koendv/arduino-ide-raspberrypi) using the [stm32duino](https://github.com/koendv/Arduino_Tools) package.  The sensor housing was designed on Raspberry Pi using [OpenSCAD with the 3D glasses](https://github.com/koendv/openscad-raspberrypi).
+This project was designed on a Raspberry Pi. The sketch was compiled on Raspberry Pi with the [Arduino IDE](https://github.com/koendv/arduino-ide-raspberrypi) using the [stm32duino](https://github.com/koendv/Arduino_Tools) package.  The sensor housing was designed on Raspberry Pi using [OpenSCAD with 3D glasses](https://github.com/koendv/openscad-raspberrypi).
 
 ## Links
 
