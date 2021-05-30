@@ -195,16 +195,26 @@ The following m-codes are available for easy integration with [openpnp](http://o
 | M913 | read relative vacuum nozzle2
 
 Example:
+Switch pump on.
+
 
 ```
 >m800
 ok
+```
+Measure absolute air pressure and absolute pump pressure:
+
+```
 >m900
 [$M900:937]
 ok
 >m901
 [$M901:837]
 ok
+```
+Vacuum is difference between air pressure and pump pressure:
+
+```
 >m911
 [$M911:100]
 ok
@@ -395,7 +405,7 @@ Download Gerbers for pcb manufacturing, stl files for 3d printing, and firmware 
 
 ## About
 
-This project was designed on a Raspberry Pi. The sketch was compiled on Raspberry Pi with the [Arduino IDE](https://github.com/koendv/arduino-ide-raspberrypi) using the [stm32duino](https://github.com/koendv/Arduino_Tools) package.  The sensor housing was designed on Raspberry Pi using [OpenSCAD with the 3D glasses extension](https://github.com/koendv/openscad-raspberrypi).
+This project was designed on a Raspberry Pi. The sketch was compiled on Raspberry Pi with the [Arduino IDE](https://github.com/koendv/arduino-ide-raspberrypi) using the [stm32duino](https://github.com/koendv/Arduino_Tools) package.  The sensor housing was designed on Raspberry Pi using [OpenSCAD with the 3D glasses](https://github.com/koendv/openscad-raspberrypi).
 
 ## Links
 
