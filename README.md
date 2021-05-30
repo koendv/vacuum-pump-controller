@@ -44,9 +44,10 @@ s#.## setpoint
 p#.## proportional gain
 i#.## integral gain
 d#.## derivative gain
-m#.## manual mode
+o#.## manual mode
 a autotune
 l## logging on/off
+m## m-code
 v## valve on/off
 w write settings
 r reset
@@ -132,7 +133,7 @@ This format can be imported in a spreadsheet.
 
 The line begins with a tab character, and numbers are separated by a tab character. If you parse console output, check for lines that begin with a tab.
 
-#### Valve
+#### v - Valve
 
 Switches outputs BO1 and BO2 on/off. These outputs are normally connected to solenoid valves.
 
@@ -141,7 +142,7 @@ Switches outputs BO1 and BO2 on/off. These outputs are normally connected to sol
 - ``v10`` switch BO2 off
 - ``v11`` switch BO2 on
 
-#### Manual Output
+#### o - manual Output
 
 Sets the motor PWM manually. Value is a number from 0 to 100, inclusive.
 
@@ -149,7 +150,7 @@ Sets the motor PWM manually. Value is a number from 0 to 100, inclusive.
 - ``o0`` stop
 - ``o`` return to automatic mode
 
-#### Autotune
+#### a - Autotune
 
 *Autotune* measures the step response. From this measurement values for Kp, Ki and Kd are calculated using [lambda tuning](https://www.controleng.com/articles/fundamentals-of-lambda-tuning/)
 
@@ -173,9 +174,9 @@ After *autotune*, if the calculated settings seem correct, use ``w`` to store th
 
 Run *autotune* again if the system has changed, firmware has been updated, a different vacuum pump or vacuum vessel has been installed.
 
-#### M-Codes
+#### m - M-Code
 
-The following m-codes are available for easy openpnp.org integration:
+The following m-codes are available for easy integration with [openpnp](http://openpnp.org):
 
 | code | description
 |---|---
@@ -211,7 +212,7 @@ ok
 
 Vacuum values can be negative due to small measurement errors, or if the sensor for measuring atmospheric pressure is missing.
 
-#### Write
+#### w - Write
 The ``w`` write command saves Kp, Ki, Kd, setpoint, and logging to non-volatile memory. The saved values will be restored on power-up.
 
 ```
@@ -219,7 +220,7 @@ The ``w`` write command saves Kp, Ki, Kd, setpoint, and logging to non-volatile 
 ok
 ```
 
-#### Reset
+#### r - Reset
 The ``r`` reset command reboots the controller.
 
 ```
@@ -230,7 +231,7 @@ ready
 >
 ```
 
-#### Firmware
+#### f - Firmware
 The ``f`` command prints the compilation date and ram usage.
 ```
 >f
