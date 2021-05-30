@@ -8,7 +8,9 @@ This is a controller for a vacuum pump, useful in pick-and-place machines. The c
 
 - up to 4 x BMP280 pressure sensors: 1 for outside pressure, 1 for vacuum pressure, and 2 for two pick-and-place nozzles. The pressure sensors on the nozzles are used to check whether a component has been picked up or fallen off.
 
-- up to 2 x 12V solenoid valve, one for each pick-and-place nozzle.
+- pressure range 300 to 1100 hPa
+
+- up to 2 x 12V solenoid valves, one for each pick-and-place nozzle.
 
 ## Usage
 
@@ -66,7 +68,7 @@ sensors ok  ok  ok  -
 ```
 In this case, there are three sensors. The first sensor measures atmospheric pressure; the second sensor measures the pressure in the vacuum vat; the third measures the pressure at the nozzle. The vacuum is the difference between the first and the second sensor. All pressures are in hPa. Atmospheric pressure is around 1000 hPa.
 
-*vacuum* is the measured value. *motor* is PWM, in percent. *mode* is *auto* if running the PID controller; *manual* if the motor PWM has been set using the ``m`` command.
+*vacuum* is the measured value. *motor* is PWM, in percent. *mode* is *auto* if running the PID controller; *manual* if the motor PWM has been set using the ``o`` command.
 
 The vacuum pump controller is a PID controller. *setpoint* is the
 desired value; *Kp*, *Ki* and *Kd* are controller proportional, integral and derivative gain. It is normal for *Kd* to be zero. If *logging* is non-zero, pressure is logged on the console every 0.1s.
@@ -139,13 +141,13 @@ Switches outputs BO1 and BO2 on/off. These outputs are normally connected to sol
 - ``v10`` switch BO2 off
 - ``v11`` switch BO2 on
 
-#### Manual
+#### Manual Output
 
 Sets the motor PWM manually. Value is a number from 0 to 100, inclusive.
 
-- ``m100`` full speed
-- ``m0`` stop
-- ``m`` return to automatic mode
+- ``o100`` full speed
+- ``o0`` stop
+- ``o`` return to automatic mode
 
 #### Autotune
 
@@ -170,6 +172,44 @@ enter w to save
 After *autotune*, if the calculated settings seem correct, use ``w`` to store these settings in non-volatile memory. If you choose not to save, the old settings will be restored after the next reset or power cycle.
 
 Run *autotune* again if the system has changed, firmware has been updated, a different vacuum pump or vacuum vessel has been installed.
+
+#### M-Codes
+
+The following m-codes are available for easy openpnp.org integration:
+
+| code | description
+|---|---
+| M800 | switch vacuum pump on
+| M801 | switch vacuum pump off
+| M802 | switch nozzle 1 vacuum solenoid on
+| M803 | switch nozzle 1 vacuum solenoid off
+| M804 | switch nozzle 2 vacuum solenoid on
+| M805 | switch nozzle 2 vacuum solenoid off
+| M900 | read absolute pressure air
+| M901 | read absolute pressure pump
+| M902 | read absolute pressure nozzle1
+| M903 | read absolute pressure nozzle2
+| M911 | read relative vacuum pump
+| M912 | read relative vacuum nozzle1
+| M913 | read relative vacuum nozzle2
+
+Example:
+
+```
+>m800
+ok
+>m900
+[$M900:937]
+ok
+>m901
+[$M901:837]
+ok
+>m911
+[$M911:100]
+ok
+```
+
+Vacuum values can be negative due to small measurement errors, or if the sensor for measuring atmospheric pressure is missing.
 
 #### Write
 The ``w`` write command saves Kp, Ki, Kd, setpoint, and logging to non-volatile memory. The saved values will be restored on power-up.
@@ -351,6 +391,10 @@ With the firmware installed, led of the Blue Pill ought to flash briefly every 5
 ## Download
 
 Download Gerbers for pcb manufacturing, stl files for 3d printing, and firmware for the microcontroller from [releases](releases)
+
+## About
+
+This project was designed on a Raspberry Pi. The sketch was compiled on Raspberry Pi with the [Arduino IDE](https://github.com/koendv/arduino-ide-raspberrypi) using the [stm32duino](https://github.com/koendv/Arduino_Tools) package.  The sensor housing was designed on Raspberry Pi using [OpenSCAD with the 3D glasses extension](https://github.com/koendv/openscad-raspberrypi).
 
 ## Links
 
