@@ -172,31 +172,30 @@ enter w to save
 
 After *autotune*, if the calculated settings seem correct, use ``w`` to store these settings in non-volatile memory. If you choose not to save, the old settings will be restored after the next reset or power cycle.
 
-Run *autotune* again if the system has changed, firmware has been updated, a different vacuum pump or vacuum vessel has been installed.
+Run *autotune* again if firmware has been updated, a vacuum pump or vacuum vessel has changed.
 
 #### m - M-Code
 
 The following m-codes are available for easy integration with [openpnp](http://openpnp.org):
 
-| code | description
-|---|---
-| M800 | switch vacuum pump on
-| M801 | switch vacuum pump off
-| M802 | switch nozzle 1 vacuum solenoid on
-| M803 | switch nozzle 1 vacuum solenoid off
-| M804 | switch nozzle 2 vacuum solenoid on
-| M805 | switch nozzle 2 vacuum solenoid off
-| M900 | read absolute pressure air
-| M901 | read absolute pressure pump
-| M902 | read absolute pressure nozzle1
-| M903 | read absolute pressure nozzle2
-| M911 | read relative vacuum pump
-| M912 | read relative vacuum nozzle1
-| M913 | read relative vacuum nozzle2
+| code | description                    |
+| ---- | ------------------------------ |
+| M800 | switch pump on                 |
+| M801 | switch pump off                |
+| M802 | switch nozzle 1 solenoid on    |
+| M803 | switch nozzle 1 solenoid off   |
+| M804 | switch nozzle 2 solenoid on    |
+| M805 | switch nozzle 2 solenoid off   |
+| M900 | read absolute pressure air     |
+| M901 | read absolute pressure pump    |
+| M902 | read absolute pressure nozzle1 |
+| M903 | read absolute pressure nozzle2 |
+| M911 | read vacuum pump               |
+| M912 | read vacuum nozzle1            |
+| M913 | read vacuum nozzle2            |
 
 Example:
 Switch pump on.
-
 
 ```
 >m800
@@ -355,15 +354,15 @@ The board is 2 layer, 55 x 55 mm.
 
 Off-the-shelf parts:
 
-| | description |
-|---|---|
-|1 | [STM32F103xx](https://www.aliexpress.com/item/32525208361.html) controller board, 128kbyte flash.
-|4 | [BMP280 3.3V pressure sensor "GY-BMP280-3.3"](https://www.aliexpress.com/item/4000587263474.html)
-|1 | [TB6612FNG dual motor driver](https://www.aliexpress.com/item/32978024026.html)
-|1 | [OLED 128x64, SPI, 7pin, SSD1306, yellow/blue](https://www.aliexpress.com/item/32638662748.html)
-|1 | DC005 DC jack
-|1 | PJ-320A 3.5 mm audio jack, 4 pin, through-hole
-|1 | 47u/25V capacitor
+|  #  | description                                                                                       |
+| --- | ------------------------------------------------------------------------------------------------- |
+| 1   | [STM32F103xx](https://www.aliexpress.com/item/32525208361.html) controller board, 128kbyte flash. |
+| 4   | [BMP280 3.3V pressure sensor "GY-BMP280-3.3"](https://www.aliexpress.com/item/4000587263474.html) |
+| 1   | [TB6612FNG dual motor driver](https://www.aliexpress.com/item/32978024026.html)                   |
+| 1   | [OLED 128x64, SPI, 7pin, SSD1306, yellow/blue](https://www.aliexpress.com/item/32638662748.html)  |
+| 1   | DC005 DC jack                                                                                     |
+| 1   | PJ-320A 3.5 mm audio jack, 4 pin, through-hole                                                    |
+| 1   | 47u/25V capacitor                                                                                 |
 
 FDM 3D-printed parts:
 
