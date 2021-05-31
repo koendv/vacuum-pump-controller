@@ -241,12 +241,15 @@ ready
 ```
 
 #### f - Firmware
-The ``f`` command prints the compilation date and ram usage.
+The ``f`` command prints firmware version, system uptime, memory and cpu statistics:
+
 ```
 >f
-compiled May 24 2021
-11312 bytes free
-13 ms slowest loop
+compiled May 30 2021
+up 3:55
+11240 bytes free
+11 ms slowest loop
+>
 ```
 
 ### Manual Controller Tuning
@@ -404,6 +407,10 @@ With the firmware installed, led of the Blue Pill flashes briefly every 5 second
 ## Download
 
 Download Gerbers for pcb manufacturing, stl files for 3d printing, and firmware for the microcontroller from [releases](releases)
+
+If you like this, maybe you want to buy me a cup of tea:
+
+[![ko-fi](images/kofibutton.svg)](https://ko-fi.com/Q5Q03LPDQ)
 
 ## About
 
