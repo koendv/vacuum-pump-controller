@@ -12,6 +12,10 @@ Plugging in a sensor is detected by setting the chip select pin to INPUT_PULLDOW
 
 A removed sensor is detected by trying to read the chip id over spi, and finding the chip id has changed.
 
+The Adafruit Unified Sensor interface was not used because using getPressure() directly has more precision, and more precision gives smoother PID control.
+
+The software is easily adapted to other BMPxxx sensors.
+
 ## Hardware
 
 The electronics have been kept simple, so there is little that can fail. The board can be soldered by hand.
