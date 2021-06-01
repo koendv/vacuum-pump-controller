@@ -3,8 +3,8 @@
 
 namespace settings {
 
-static const double kDefaultKp = 150.0;
-static const double kDefaultKi = 50.0;
+static const double kDefaultKp = 30.0;
+static const double kDefaultKi = 10.0;
 static const double kDefaultKd = 0.0;
 static const double kDefaultSetpoint = 100.0;
 static const bool kDefaultLogging = false;

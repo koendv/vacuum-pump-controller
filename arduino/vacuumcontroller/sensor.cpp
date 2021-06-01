@@ -84,27 +84,24 @@ void setSampleTime(uint32_t millis) {
 }
 
 // logging.
-// logging is the only line of output that begins with a tab '\t'
-// logs time, motor pwm, pressure in Pa, and checksum.
+// logs time, motor pwm, pressure in Pa, and checksum in csv format.
 // checksum is simple 32-bit sum of timestamp, pressures and motor pwm.
 
 void logSensors(uint32_t now) {
+  Serial.print(';');
   uint32_t checksum = 0;
-  Serial.print('\t');
   Serial.print(now);
+  Serial.print(';');
   checksum = now;
-  Serial.print('\t');
   Serial.print(motor::pwma);
+  Serial.print(';');
   checksum += motor::pwma;
-  Serial.print('\t');
   for (int i = 0; i < NUM_SENSOR; i++) {
     Serial.print(ipressure[i]);
-    Serial.print('\t');
+    Serial.print(';');
     checksum += ipressure[i];
   }
-  Serial.print(checksum);
-  Serial.print('\t');
-  Serial.println();
+  Serial.println(checksum);
 }
 
 void printSensors() {

@@ -8,7 +8,7 @@ This is a controller for a vacuum pump, useful in pick-and-place machines. The c
 
 - up to 4 x BMP280 pressure sensors: 1 for outside pressure, 1 for vacuum pressure, and 2 for two pick-and-place nozzles. The pressure sensors on the nozzles are used to check whether a component has been picked up or fallen off.
 
-- pressure range 300 to 1100 hPa
+- sensor pressure range 300 to 1100 hPa
 
 - up to 2 x 12V solenoid valves, one for each pick-and-place nozzle.
 
@@ -67,16 +67,18 @@ setpoint hPa: 100.00 Kp: 150.00 Ki: 50.00 Kd: 0.00 logging: 0
 pressure hPa: 938.86 838.89 939.41 0.00
 sensors ok  ok  ok  -
 ```
-In this case, there are three sensors. The first sensor measures atmospheric pressure; the second sensor measures the pressure in the vacuum vat; the third measures the pressure at the nozzle. The vacuum is the difference between the first and the second sensor. All pressures are in hPa. Atmospheric pressure is around 1000 hPa.
+In this case, the boot message shows there are three sensors. The first sensor measures atmospheric pressure; the second sensor measures the pressure in the vacuum vat; the third measures the pressure at the nozzle. The fourth sensor is absent (-).
 
-*vacuum* is the measured value. *motor* is PWM, in percent. *mode* is *auto* if running the PID controller; *manual* if the motor PWM has been set using the ``o`` command.
+The vacuum is the difference between the first and the second sensor. All pressures are in hPa. Atmospheric pressure is around 1000 hPa.
+
+*vacuum* is the PID controller measured value. *motor* is PWM, in percent. *mode* is *auto* when the PID controller sets motor PWM. *mode* is *manual* if motor PWM has been set using the ``o`` command.
 
 The vacuum pump controller is a PID controller. *setpoint* is the
 desired value; *Kp*, *Ki* and *Kd* are controller proportional, integral and derivative gain. It is normal for *Kd* to be zero. If *logging* is non-zero, pressure is logged on the console every 0.1s.
 
 *pressure* is the pressure from the four sensors, in hPa. If a sensor is not plugged in, the pressure is 0.
 
-Lastly, *sensors* is the sensor state. If a sensor says ``?``, check the cable, check the sensor is plugged in right, or power cycle the board.
+Lastly, *sensors* is the sensor state. If a sensor says ``?``, check the cable, check the sensor is plugged in right, or try power cycling.
 
 #### s - Setpoint
 
@@ -118,20 +120,19 @@ Switches logging on or off.
 - ``l0`` logging off.
 - ``l1`` logging on.
 
-Use the ``w`` command if you want this setting to be saved.
+Use the ``w`` command if you want this and other settings to be saved.
 
 When logging is on, every sample is printed on the console output, in one line, e.g.:
 ```
-        1743075 52417   93876   83764   93926   0       2067058
+;1743075;52417;93876;83764;93926;0;2067058
 ```
 The fields are:
 - time since boot in milliseconds
 - motor PWM; a value from 0 to 65535.
 - pressure of sensor 1, 2, 3, 4 in Pa.
 - a checksum that is the 32 bit sum of the 6 previous numbers.
-This format can be imported in a spreadsheet.
 
-The line begins with a tab character, and numbers are separated by a tab character. If you parse console output, check for lines that begin with a tab.
+Logging output can be imported in a spreadsheet as [csv](https://en.wikipedia.org/wiki/Comma-separated_values). The line begins with a semi-colon ";", and numbers are separated by a semi-colon. If you parse console output, check for lines that begin with a semi-colon.
 
 #### v - Valve
 
@@ -147,12 +148,12 @@ Switches outputs BO1 and BO2 on/off. These outputs are normally connected to sol
 Sets the motor PWM manually. Value is a number from 0 to 100, inclusive.
 
 - ``o100`` full speed
-- ``o0`` stop
+- ``o0`` stop. mnemonic: *output zero*
 - ``o`` return to automatic mode
 
 #### a - Autotune
 
-*Autotune* measures the step response. From this measurement values for Kp, Ki and Kd are calculated using [lambda tuning](https://www.controleng.com/articles/fundamentals-of-lambda-tuning/)
+*Autotune* measures the step response. Values for Kp, Ki and Kd are calculated from the step response using [lambda tuning](https://www.controleng.com/articles/fundamentals-of-lambda-tuning/). Running *autotune* optimizes controller response time, and the accuracy with which the vacuum is maintained.
 
 ```
 >a
@@ -172,7 +173,9 @@ enter w to save
 
 After *autotune*, if the calculated settings seem correct, use ``w`` to store these settings in non-volatile memory. If you choose not to save, the old settings will be restored after the next reset or power cycle.
 
-Run *autotune* again if firmware has been updated, a vacuum pump or vacuum vessel has changed.
+To adjust the controller to your system, *you need to run autotune and save the settings at least once.*
+
+Run *autotune* again if firmware has been updated, vacuum pump or vacuum vessel has changed.
 
 #### m - M-Code
 
@@ -251,16 +254,6 @@ up 3:55
 11 ms slowest loop
 >
 ```
-
-### Manual Controller Tuning
-
-If, instead of autotune, you wish to *manually* tune the controller, try the following:
-
-- set Kp, Ki, Kd to 0
-- increase Kp until the system oscillates. Set Kp to half this value.
-- increase Ki until the system oscillates. Set Ki to half this value.
-
-The result will not be optimal, but ought to work. Autotune is preferred.
 
 ### Connections
 
@@ -393,9 +386,9 @@ The software is an Arduino sketch, compiled with the STM32duino board support pa
 
 You can compile and upload the firmware from the Arduino IDE, or use the pre-compiled binaries and upload from the command line. To upload the firmware:
 
+- connect a usb-serial converter to header H5, pins GND, TXD, RXD.
 - set Blue Pill jumper BOOT0 to 1, BOOT1 to 0.
 - reset or power cycle the Blue Pill
-- connect a usb-serial converter to header H5, pins GND, TXD, RXD.
 - upload the firmware.
     - If using the Arduino IDE, choose *Sketch->Upload*.
     - If uploading from the command line, use ```/usr/bin/stm32flash -g 0x8000000 -b 115200 -w vacuumcontroller.ino.bin /dev/ttyUSB0```, replacing USB0 with the device of the usb-serial converter.
@@ -406,7 +399,7 @@ With the firmware installed, led of the Blue Pill flashes briefly every 5 second
 
 ## Download
 
-Download Gerbers for pcb manufacturing, stl files for 3d printing, and firmware for the microcontroller from [releases](releases)
+Download Gerbers for pcb manufacturing, stl files for 3d printing, and firmware for the microcontroller from [releases](releases). Pcb 's ordered at [jlcpcb.com](https://jlcpcb.com/) or [oshpark](https://oshpark.com/shared_projects/RhzQyJqY).
 
 If you like this, maybe you want to buy me a cup of tea:
 
@@ -414,7 +407,7 @@ If you like this, maybe you want to buy me a cup of tea:
 
 ## About
 
-This project was designed on a Raspberry Pi. The sketch was compiled on Raspberry Pi with the [Arduino IDE](https://github.com/koendv/arduino-ide-raspberrypi) using the [stm32duino](https://github.com/koendv/Arduino_Tools) package.  The sensor housing was designed on Raspberry Pi using [OpenSCAD with 3D glasses](https://github.com/koendv/openscad-raspberrypi).
+This project was designed on a Raspberry Pi. The electronics pcb was designed using [easyeda](https://oshwlab.com/koendv/vacuum-pump-controller). The arduino sketch was compiled on Raspberry Pi with the [Arduino IDE](https://github.com/koendv/arduino-ide-raspberrypi) using the [stm32duino](https://github.com/koendv/Arduino_Tools) package.  The sensor housing was designed on Raspberry Pi using [OpenSCAD with 3D glasses](https://github.com/koendv/openscad-raspberrypi).
 
 ## Links
 
