@@ -7,6 +7,7 @@ static uint32_t slowestLoopMillis = 0;
 uint32_t slowest_loop() {
   uint32_t slowest = slowestLoopMillis;
   slowestLoopMillis = 0;
+  lastTimeMillis = millis();
   return slowest;
 }
 

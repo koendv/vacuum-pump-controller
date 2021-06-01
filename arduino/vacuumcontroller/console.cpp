@@ -242,6 +242,7 @@ void doCommand() {
       break;
     case 'a': // tune
       autotune::tune();
+      loopstats::slowest_loop(); // reset cpu stats
       break;
     case 'l': // console pressure logging on/off
       settings::logging = (ival != 0);
