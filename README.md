@@ -248,12 +248,14 @@ The ``f`` command prints firmware version, system uptime, memory and cpu statist
 
 ```
 >f
-compiled May 30 2021
-up 3:55
+compiled Jun  1 2021
+up 0:16
 11240 bytes free
 11 ms slowest loop
 >
 ```
+
+Use this to check for reboots, memory leaks, and cpu hogs.
 
 ### Connections
 
