@@ -173,7 +173,7 @@ enter w to save
 
 After *autotune*, if the calculated settings seem correct, use ``w`` to store these settings in non-volatile memory. If you choose not to save, the old settings will be restored after the next reset or power cycle.
 
-To adjust the controller to your system, *you need to run autotune and save the settings at least once.*
+To adjust the controller to your system, *you need to run autotune* ``a`` *and save the settings* ``w`` *at least once.* Without autotune, controller response will be sluggish.
 
 Run *autotune* again if firmware has been updated, vacuum pump or vacuum vessel has changed.
 
