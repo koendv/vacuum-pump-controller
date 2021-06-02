@@ -27,6 +27,11 @@
 
 namespace console {
 
+enum err_code { ERR_OK,
+                ERR_SYNTAX,
+                ERR_VALUE };
+enum err_code ok;
+
 String cmdline;
 
 void reset() {
@@ -34,35 +39,29 @@ void reset() {
   watchdog::reboot();
 }
 
-/* 
- * m-codes, for easy compatibility with openpnp.org
- * vacuum values can be negative due to measurement errors,
- * or if the sensor for measuring atmospheric pressure is missing.
- */
-
-// print m-code response
-void m_response(int m, int val) {
-  Serial.print("[$M");
-  Serial.print(m);
-  Serial.print(':');
-  Serial.print(val);
-  Serial.println(']');
-}
+// m-codes, for easy compatibility with openpnp.org
 
 // print sensor s pressure in hPa as m-code response
 void m_pressure(int m, int s, bool relative) {
   int32_t p;
   sensor::readSensors();
-  p = sensor::ipressure[s];       // pressure in Pa
-  if (relative)
+  p = sensor::ipressure[s]; // pressure in Pa
+  if (relative) {
+    // pressure can be negative due to small measurement errors,
+    // or if the sensor for measuring atmospheric pressure is missing.
     p = sensor::ipressure[0] - p; // relative vacuum
-  p = p / 100;                    // convert to hPa
-  m_response(m, p);
+  }
+  p = p / 100; // convert from Pa to hPa
+  Serial.print("read:");
+  Serial.println(p);
 }
 
 // parse m-code
 void m_code(int m) {
   switch (m) {
+  case 115:
+    Serial.println("FIRMWARE_NAME:vacuum pump controller " __DATE__);
+    break;
   case 800: // M800 switch vacuum pump on
     PIDctrl::automatic();
     break;
@@ -103,6 +102,9 @@ void m_code(int m) {
     m_pressure(m, 3, true);
     break;
   default:
+    Serial.print("echo:Unknown command: \"M");
+    Serial.print(m);
+    Serial.println('"');
     break;
   }
   return;
@@ -168,8 +170,7 @@ void printFirmware() {
   Serial.println(" ms slowest loop");
 }
 
-bool setValve(int i) {
-  bool ok = true;
+void setValve(int i) {
   switch (i) {
   case 00:
     motor::setswitch(2, false); // v00: TB6612 pin B01 off
@@ -184,11 +185,9 @@ bool setValve(int i) {
     motor::setswitch(3, true); // v11: TB6612 pin B02 on
     break;
   default:
-    Serial.println("how?");
-    ok = false;
+    ok = ERR_VALUE;
     break;
   }
-  return ok;
 }
 
 /*
@@ -198,12 +197,8 @@ bool setValve(int i) {
 void doCommand() {
   double fval = 0;
   int ival = 0;
-  bool ok = true;
-
-  Serial.println();
+  ok = ERR_OK;
   cmdline.trim();
-  cmdline.toLowerCase();
-
   // check numeric argument
   if (cmdline.length() >= 2) {
     if (isDigit(cmdline[1])) {
@@ -238,7 +233,7 @@ void doCommand() {
       else if ((fval >= 0) && (fval <= 100))
         PIDctrl::manual(fval / 100.0 * MAXPWM);
       else
-        Serial.println("how?");
+        ok = ERR_VALUE;
       break;
     case 'a': // tune
       autotune::tune();
@@ -248,41 +243,45 @@ void doCommand() {
       settings::logging = (ival != 0);
       break;
     case 'v': // switch output pin on/off
-      ok = setValve(ival);
+      setValve(ival);
       break;
     case 'm': // openpnp.org m-codes
       m_code(ival);
-      ok = true;
       break;
     case 'w': // write settings to non-volatile
       settings::write();
       break;
     case 'r': // reset sensors and pid controller
       reset();
-      ok = false;
       break;
     case '?': // print all variables and settings
       printStatus();
-      ok = false;
       break;
     case 'f':
       printFirmware();
-      ok = false;
       break;
     case 'h': // help
       printHelp();
-      ok = false;
       break;
     default:
-      Serial.println("what?");
-      ok = false;
+      ok = ERR_SYNTAX;
       break;
     }
-    if (ok)
-      Serial.println("ok");
+  }
+  switch (ok) {
+  case ERR_OK:
+    Serial.println("ok");
+    break;
+  case ERR_SYNTAX:
+    Serial.println("what?");
+    break;
+  case ERR_VALUE:
+    Serial.println("how?");
+    break;
+  default:
+    break;
   }
   cmdline = "";
-  Serial.print(">");
   return;
 }
 
@@ -296,27 +295,40 @@ void setup() {
     else
       delay(10);
   Serial.println();
-  Serial.println("vacuum controller - type h for help");
+  Serial.println("vacuum pump controller - type h for help");
 }
 
 void loop() {
+  static bool echo_on = true;
   while (Serial.available()) {
     char ch = Serial.read();
+    if (isUpperCase(ch))
+      ch = ch - 'A' + 'a';
     switch (ch) {
     case '\b':
       if (cmdline.length() > 0) {
         cmdline.remove(cmdline.length() - 1);
-        Serial.print("\b \b");
+        if (echo_on)
+          Serial.print("\b \b");
       }
       break;
     case '\r':
     case '\n':
+      if (echo_on)
+        Serial.println();
       doCommand();
+      if (echo_on)
+        Serial.print(">");
       break;
     default:
       if (cmdline.length() != MAXCMDLEN)
         cmdline += ch;
-      Serial.print(ch);
+      if (ch == 'm')
+        echo_on = false; // don't echo m-code
+      else if (!isDigit(ch))
+        echo_on = true; // echo interactive command
+      if (echo_on)
+        Serial.print(ch);
       break;
     }
   }
