@@ -60,7 +60,7 @@ void m_pressure(int m, int s, bool relative) {
 void m_code(int m) {
   switch (m) {
   case 115:
-    Serial.println("FIRMWARE_NAME:vacuum pump controller " __DATE__);
+    Serial.println("FIRMWARE_NAME:vacuum pump");
     break;
   case 800: // M800 switch vacuum pump on
     PIDctrl::automatic();
@@ -295,7 +295,7 @@ void setup() {
     else
       delay(10);
   Serial.println();
-  Serial.println("vacuum pump controller - type h for help");
+  Serial.println("vacuum pump - type h for help");
 }
 
 void loop() {

@@ -16,7 +16,9 @@
   * - USB support: CDC (generic 'Serial' supersede U(S)ART)
   */
 
-/* clang-format -style="{ColumnLimit: 0}" */
+// clang-format -style="{ColumnLimit: 0}"
+
+// build_opt -DUSB_PRODUCT_STRING=\"vacuum\ pump\ controller\"
 
 #include "breathing_led.h"
 #include "console.h"
