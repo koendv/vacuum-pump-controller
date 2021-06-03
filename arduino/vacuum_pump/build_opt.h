@@ -1,1 +1,1 @@
--DUSB_PRODUCT_STRING=\"vacuum\ pump\ controller\"
+-DUSB_PRODUCT_STRING=\"vacuum\ pump\"
