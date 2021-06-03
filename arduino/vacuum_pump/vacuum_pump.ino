@@ -18,7 +18,7 @@
 
 // clang-format -style="{ColumnLimit: 0}"
 
-// build_opt -DUSB_PRODUCT_STRING=\"vacuum\ pump\ controller\"
+// build-opt -DUSB_PRODUCT_STRING=\"vacuum\ pump\"
 
 #include "breathing_led.h"
 #include "console.h"
