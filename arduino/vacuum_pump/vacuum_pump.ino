@@ -44,7 +44,7 @@ void setup() {
   footswitch::setup();
   PIDctrl::setup();
 
-  Serial.println("ready");
+  Serial.println("ok");
   Serial.print('>');
 }
 

@@ -17,7 +17,6 @@
  * A command is a character, optionally followed by an integer or floating-point number.
  * Status messages are:
  * "init"  - non-volatile storage reset to defaults
- * "ready" - running
  * "ok"    - command successful
  * "how?"  - illegal value
  * "what?" - syntax error
