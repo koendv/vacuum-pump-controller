@@ -10,7 +10,7 @@ This is a controller for a vacuum pump, useful in pick-and-place machines. The c
 
 - sensor pressure range 300 to 1100 hPa
 
-- up to 2 x 12V solenoid valves, one for each pick-and-place nozzle.
+- up to 2 x 12V solenoid valves, for up to two pick-and-place nozzles.
 
 ## Usage
 
@@ -69,7 +69,7 @@ setpoint hPa: 100.00 Kp: 150.00 Ki: 50.00 Kd: 0.00 logging: 0
 pressure hPa: 938.86 838.89 939.41 0.00
 sensors ok  ok  ok  -
 ```
-In this case, the boot message shows there are three sensors. The first sensor measures atmospheric pressure; the second sensor measures the pressure in the vacuum vat; the third measures the pressure at the nozzle. The fourth sensor is absent (-).
+In this example, the boot message shows there are three sensors. The first sensor measures atmospheric pressure; the second sensor measures the pressure in the vacuum vat; the third measures the pressure at the nozzle. In this example the fourth sensor is absent (-).
 
 The vacuum is the difference between the first and the second sensor. All pressures are in hPa. Atmospheric pressure is around 1000 hPa.
 
@@ -80,7 +80,7 @@ desired value; *Kp*, *Ki* and *Kd* are controller proportional, integral and der
 
 *pressure* is the pressure from the four sensors, in hPa. If a sensor is not plugged in, the pressure is 0.
 
-Lastly, *sensors* is the sensor state. If a sensor says ``?``, check the cable, check the sensor is plugged in right, or try power cycling.
+*sensors* is the sensor state. If a sensor says ``?``, check the cable, check the sensor is plugged in right, or try power cycling.
 
 #### s - Setpoint
 
@@ -183,6 +183,8 @@ Run *autotune* again if firmware has been updated, vacuum pump or vacuum vessel 
 
 #### m - M-Code
 
+M-code commands consist of the letter ``M`` followed by a number. M-code commands are intended for computer-to-computer interaction. M-code commands are not echoed back when you type them, and no ``>`` prompt is printed when the command is finished.
+
 The following m-codes are available for easy integration with [openpnp](http://openpnp.org):
 
 | code | description                       |
@@ -200,8 +202,6 @@ The following m-codes are available for easy integration with [openpnp](http://o
 | M911 | read vacuum at pump               |
 | M912 | read vacuum at nozzle1            |
 | M913 | read vacuum at nozzle2            |
-
-These commands are intended for computer-to-computer interaction. Different from the other commands, the *m-code* commands are not echoed back when you type them, and no ``>`` prompt is printed when the command is finished.
 
 Example:
 Switch pump on.
@@ -327,6 +327,8 @@ The footswitch connects using a 3.5mm TRRS jack. Solder a cable from an old mobi
 
 The console prints ``footswitch`` when a footswitch is detected.
 
+In standalone mode connect the usb port to a mobile phone charger.
+
 ## Display
 
 ![oled](images/display.png)
@@ -349,16 +351,28 @@ On linux, configure udev. As root:
 ```
 cat <<EOD > /etc/udev/rules.d/98-vacuum_pump.rules
 ATTRS{idProduct}=="5740", ATTRS{idVendor}=="0483", ENV{ID_MODEL}=="vacuum_pump", MODE="664", GROUP="dialout", ENV{ID_MM_DEVICE_IGNORE}="1"
-SUBSYSTEM=="tty", ACTION=="add", ENV{ID_MODEL}=="vacuum_pump", SYMLINK+="tty_vacuum_pump"
+SUBSYSTEM=="tty", ACTION=="add", ENV{ID_MODEL}=="vacuum_pump", SYMLINK+="ttyACM99_vacuum_pump"
 EOD
 chmod 644 /etc/udev/rules.d/98-vacuum_pump.rules
 udevadm control --reload-rules
 ```
-This creates a device ``/dev/tty_vacuum_pump`` When the vacuum pump controller is plugged in, open to everybody in the *dialout* group. Add yourself to the dialout group:
+This creates a device ``/dev/ttyACM99_vacuum_pump``, open to everybody in the *dialout* group. Add yourself to the dialout group:
 ```
 sudo adduser "$USER" dialout
 ```
-Unplug and plug in the vacuum pump controller. Check ``dmesg`` shows a new usb device *vacuum pump*. Check ``minicom -D /dev/tty_vacuum_pump`` gives you the console prompt of the vacuum pump.
+Unplug and plug in the vacuum pump controller. Check ``dmesg`` shows a new usb device *vacuum pump*. Check ``minicom -D /dev/ttyACM99_vacuum_pump`` gives you the console prompt of the vacuum pump.
+
+### OpenPnP
+*TBD - in progress*
+
+In OpenPnP, configure a GCodeDriver for serial port ``/dev/ttyACM99_vacuum_pump``.
+
+Setting|value
+---|---
+Detect firmware|FIRMWARE_NAME:vacuum pump
+COMMAND_CONFIRM_REGEX|^ok$
+ACTUATOR_READ_COMMAND|M911
+ACTUATOR_READ_REGEX|\\[read:(?<Value>-?\d+)\\]
 
 ## Hardware
 
