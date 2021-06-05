@@ -145,7 +145,7 @@ Switches outputs BO1 and BO2 on/off. These outputs are normally connected to sol
 - ``v10`` switch BO2 off
 - ``v11`` switch BO2 on
 
-*Restriction*: Because of the way the driver ic works, both solenoid valves can not be powered at the same time. Powering one solenoid valve automatically turns off the other.
+*Restriction*: Because of the way the driver ic works, both solenoid valves can not be powered at the same time. Switching one solenoid valve on automatically switches off the other.
 
 #### o - manual Output
 
@@ -365,7 +365,7 @@ Unplug and plug in the vacuum pump controller. Check ``dmesg`` shows a new usb d
 ### OpenPnP
 *TBD - in progress*
 
-In OpenPnP, configure a GCodeDriver for serial port ``/dev/ttyACM99_vacuum_pump``.
+In OpenPnP, configure a GCodeDriver for serial port ``/dev/ttyACM99_vacuum_pump``. 
 
 Setting|value
 ---|---
