@@ -304,6 +304,8 @@ There is no need to calibrate the sensors; the sensors are calibrated at the fac
 
 On a Parker D1001-23-01 vacuum pump, wire colors are: red 12V, black ground, white PWM, blue tacho. Check datasheet before connecting.
 
+For the controller to work, if the voltage on pin AOUT1 increases, the vacuum pump should run faster, and the vacuum should increase.
+
 #### Solenoid valve
 
 Connect the first solenoid valve:
