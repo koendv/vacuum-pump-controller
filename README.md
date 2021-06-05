@@ -6,11 +6,15 @@ This is a controller for a vacuum pump, useful in pick-and-place machines. The c
 
 ## Features:
 
+- controls one 12V 1A vacuum pump (diaphragm pump).
+
 - up to 4 x BMP280 pressure sensors: 1 for outside pressure, 1 for vacuum pressure, and 2 for two pick-and-place nozzles. The pressure sensors on the nozzles are used to check whether a component has been picked up or fallen off.
 
 - sensor pressure range 300 to 1100 hPa
 
 - up to 2 x 12V solenoid valves, for up to two pick-and-place nozzles.
+
+- PID controller with autotuning
 
 ## Usage
 
