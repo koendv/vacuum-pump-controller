@@ -31,7 +31,7 @@ void setup() {
   analogWrite(TB6612_PWMA, MAXPWM);
   digitalWrite(TB6612_AIN1, LOW);
   digitalWrite(TB6612_AIN2, LOW);
-  analogWrite(TB6612_PWMB, MAXPWM);
+  digitalWrite(TB6612_PWMB, HIGH);
   digitalWrite(TB6612_BIN1, LOW);
   digitalWrite(TB6612_BIN2, LOW);
   digitalWrite(TB6612_STBY, HIGH);
@@ -88,27 +88,60 @@ void speed(int pwm, int port) {
 }
 
 // use up to four on/off switches
+// note:
+// - AOUT1 and AOUT2 can not be powered at the same time.
+// - BOUT1 and BOUT2 can not be powered at the same time.
+// this is because we are using a dc motor driver ic, and
+// a motor can go forward or backward, but not both at the same time.
+// see TB6612 datasheet, p.4, H-SW Control Function
 
 void setswitch(int nr, bool onoff) {
-  switch (nr) {
-  case 0:
-    digitalWrite(TB6612_PWMA, HIGH);
-    digitalWrite(TB6612_AIN1, onoff);
-    break;
-  case 1:
-    digitalWrite(TB6612_PWMA, HIGH);
-    digitalWrite(TB6612_AIN2, onoff);
-    break;
-  case 2:
-    digitalWrite(TB6612_PWMB, HIGH);
-    digitalWrite(TB6612_BIN1, onoff);
-    break;
-  case 3:
-    digitalWrite(TB6612_PWMB, HIGH);
-    digitalWrite(TB6612_BIN2, onoff);
-    break;
-  default:
-    break;
+  if (onoff) {
+    switch (nr) {
+    case 0:
+      digitalWrite(TB6612_PWMA, HIGH);
+      digitalWrite(TB6612_AIN2, false);
+      digitalWrite(TB6612_AIN1, true);
+      break;
+    case 1:
+      digitalWrite(TB6612_PWMA, HIGH);
+      digitalWrite(TB6612_AIN1, false);
+      digitalWrite(TB6612_AIN2, true);
+      break;
+    case 2:
+      digitalWrite(TB6612_PWMB, HIGH);
+      digitalWrite(TB6612_BIN2, false);
+      digitalWrite(TB6612_BIN1, true);
+      break;
+    case 3:
+      digitalWrite(TB6612_PWMB, HIGH);
+      digitalWrite(TB6612_BIN1, false);
+      digitalWrite(TB6612_BIN2, true);
+      break;
+    default:
+      break;
+    }
+  } else {
+    switch (nr) {
+    case 0:
+      digitalWrite(TB6612_PWMA, HIGH);
+      digitalWrite(TB6612_AIN1, false);
+      break;
+    case 1:
+      digitalWrite(TB6612_PWMA, HIGH);
+      digitalWrite(TB6612_AIN2, false);
+      break;
+    case 2:
+      digitalWrite(TB6612_PWMB, HIGH);
+      digitalWrite(TB6612_BIN1, false);
+      break;
+    case 3:
+      digitalWrite(TB6612_PWMB, HIGH);
+      digitalWrite(TB6612_BIN2, false);
+      break;
+    default:
+      break;
+    }
   }
 }
 

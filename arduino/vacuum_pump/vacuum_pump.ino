@@ -32,6 +32,8 @@
 #include "uptime.h"
 #include "watchdog.h"
 
+const int sample_time_millis = 20;
+
 void setup() {
   console::setup(); // open usb serial
   watchdog::setup();
@@ -43,8 +45,10 @@ void setup() {
   motor::setup();
   footswitch::setup();
   PIDctrl::setup();
+  sensor::setSampleTime(sample_time_millis);
+  PIDctrl::setSampleTime(sample_time_millis);
 
-  Serial.println("ok");
+  Serial.println("ready");
   Serial.print('>');
 }
 

@@ -47,6 +47,10 @@ bool isAuto() {
   return PIDcontrol.GetMode() == AUTOMATIC;
 }
 
+void setSampleTime(int millis) {
+  PIDcontrol.SetSampleTime(millis);
+}
+
 void loop() {
   if (isnan(sensor::vacuum))
     return;

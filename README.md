@@ -14,6 +14,8 @@ This is a controller for a vacuum pump, useful in pick-and-place machines. The c
 
 ## Usage
 
+The controller needs two power sources: +5V from the usb connector for the electronics, and +12V from the DC jack for the vacuum pump and solenoid valves.
+
 Plug the controller in a usb port, and connect to the usb serial port. On linux, this is ``minicom -D /dev/ttyACM0``
 
 Hit the reset button to see the boot message:
@@ -143,6 +145,8 @@ Switches outputs BO1 and BO2 on/off. These outputs are normally connected to sol
 - ``v10`` switch BO2 off
 - ``v11`` switch BO2 on
 
+*Restriction*: Because of the way the driver ic works, both solenoid valves can not be powered at the same time. Powering one solenoid valve automatically turns off the other.
+
 #### o - manual Output
 
 Sets the motor PWM manually. Value is a number from 0 to 100, inclusive.
@@ -197,28 +201,30 @@ The following m-codes are available for easy integration with [openpnp](http://o
 | M912 | read vacuum at nozzle1            |
 | M913 | read vacuum at nozzle2            |
 
+These commands are intended for computer-to-computer interaction. Different from the other commands, the *m-code* commands are not echoed back when you type them, and no ``>`` prompt is printed when the command is finished.
+
 Example:
 Switch pump on.
 
 ```
->m800
+m800
 ok
 ```
 Measure absolute air pressure and absolute pump pressure:
 
 ```
->m900
-[$M900:937]
+m900
+[read:937]
 ok
->m901
-[$M901:837]
+m901
+[read:837]
 ok
 ```
 Vacuum is difference between air pressure and pump pressure:
 
 ```
->m911
-[$M911:100]
+m911
+[read:100]
 ok
 ```
 
@@ -335,6 +341,25 @@ The display is a yellow/blue oled display, 128x64, SPI, SSD1306 controller. The 
 
 To the right there is a small square that blinks slowly to show the display works.
 
+## Configuration
+### linux
+
+On linux, configure udev. As root:
+
+```
+cat <<EOD > /etc/udev/rules.d/98-vacuum_pump.rules
+ATTRS{idProduct}=="5740", ATTRS{idVendor}=="0483", ENV{ID_MODEL}=="vacuum_pump", MODE="664", GROUP="dialout", ENV{ID_MM_DEVICE_IGNORE}="1"
+SUBSYSTEM=="tty", ACTION=="add", ENV{ID_MODEL}=="vacuum_pump", SYMLINK+="tty_vacuum_pump"
+EOD
+chmod 644 /etc/udev/rules.d/98-vacuum_pump.rules
+udevadm control --reload-rules
+```
+This creates a device ``/dev/tty_vacuum_pump`` When the vacuum pump controller is plugged in, open to everybody in the *dialout* group. Add yourself to the dialout group:
+```
+sudo adduser "$USER" dialout
+```
+Unplug and plug in the vacuum pump controller. Check ``dmesg`` shows a new usb device *vacuum pump*. Check ``minicom -D /dev/tty_vacuum_pump`` gives you the console prompt of the vacuum pump.
+
 ## Hardware
 
 [![screenshot](images/vacuum_pump_controller_small.jpg)](https://raw.githubusercontent.com/koendv/vacuum-pump-controller/master/images/vacuum_pump_controller_big.jpg)
@@ -346,7 +371,7 @@ The board is built around an STM32F103 *Blue Pill*. The microcontroller reads th
 - [pcb bottom](doc/pcb_bottom.pdf)
 - [easyeda/oshw project](https://oshwlab.com/koendv/vacuum-pump-controller).
 
-The board is 2 layer, 55 x 55 mm.
+The board is 2 layer, 55 x 55 mm, hand-solderable.
 
 ### Bill of Materials
 

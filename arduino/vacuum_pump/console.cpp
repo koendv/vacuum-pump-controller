@@ -34,7 +34,11 @@ enum err_code ok;
 String cmdline;
 
 void reset() {
+  Serial.println("ok");
+  Serial.flush();
   motor::speed(0);
+  motor::setswitch(2, false);
+  motor::setswitch(3, false);
   watchdog::reboot();
 }
 
@@ -46,13 +50,14 @@ void m_pressure(int m, int s, bool relative) {
   sensor::readSensors();
   p = sensor::ipressure[s]; // pressure in Pa
   if (relative) {
-    // pressure can be negative due to small measurement errors,
+    // vacuum can be negative due to small measurement errors,
     // or if the sensor for measuring atmospheric pressure is missing.
     p = sensor::ipressure[0] - p; // relative vacuum
   }
   p = p / 100; // convert from Pa to hPa
-  Serial.print("read:");
-  Serial.println(p);
+  Serial.print("[read:");
+  Serial.print(p);
+  Serial.println(']');
 }
 
 // parse m-code
@@ -250,8 +255,8 @@ void doCommand() {
     case 'w': // write settings to non-volatile
       settings::write();
       break;
-    case 'r': // reset sensors and pid controller
-      reset();
+    case 'r':  // reset sensors and pid controller
+      reset(); // does not return
       break;
     case '?': // print all variables and settings
       printStatus();

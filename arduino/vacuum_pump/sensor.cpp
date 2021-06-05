@@ -234,6 +234,10 @@ void readSensors() {
 }
 #endif
 
+void setSampleTime(int millis) {
+  sampleTime = millis;
+}
+
 void setup() {
   detectSensors();
   printSensors();
