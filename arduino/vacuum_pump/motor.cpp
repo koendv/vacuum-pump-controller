@@ -97,6 +97,7 @@ void speed(int pwm, int port) {
 
 void setswitch(int nr, bool onoff) {
   if (onoff) {
+    // before switching on a solenoid, switch off the other solenoid of the pair
     switch (nr) {
     case 0:
       digitalWrite(TB6612_PWMA, HIGH);

@@ -8,12 +8,16 @@
   * - Adafruit_GFX library
   * - Adafruit_BMP280 library
   * - PID library v1.2.0 by Brett Beauregard
+  * - STM32RTC library
   *
   * Compilation settings:
   * - Board: Generic STM32F1 Series
   * - Board part number: Bluepill F103CB (or C8 with 128k)
-  * - USART support: enabled (no generic 'Serial')
+  * - USART support: enabled (generic 'Serial')
   * - USB support: CDC (generic 'Serial' supersede U(S)ART)
+  * - USB speed: Low/Full Speed
+  * - Optimize: Smallest (-Os)
+  * - C Runtime library: newlib nano
   */
 
 // clang-format -style="{ColumnLimit: 0}"
