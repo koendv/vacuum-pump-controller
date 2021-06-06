@@ -74,4 +74,4 @@ Simple measures to save flash.
 - Set "Optimize: Smallest (-Os) with LTO"
   [Link Time Optimization](https://gcc.gnu.org/wiki/LinkTimeOptimization) (LTO) saves 11828 bytes flash. But sometimes LTO drops too much code, so this option requires careful checking the program still works after LTO.
 
-If LTO works, these measures save 23291 bytes flash, enough for the code to fit in 64K. (size: 63756 bytes).
+If LTO works, these measures save 23291 bytes flash, enough for the code to fit in 64K. (size: 63756 bytes). Personally, I think it's safer to buy a STM32F013 with 128 kbyte flash, and avoid use of LTO until flash is full.
