@@ -59,7 +59,7 @@ The safety factor can be tuned a little to trade off stability for accuracy, if 
 
 ## Ways to save flash
 
-Simple measures save 11463 bytes flash.
+Simple measures to save flash.
 
 - The sketch uses a 24pt bitmap font to display the vacuum on an oled display. Fonts use a lot of flash memory, especially at larger point sizes. Optimize by storing only those characters actually needed. The font ``Veranda24ptDigits.h`` only contains the characters ``-./01234567890:``, sufficient to print positive and negative integers and floats and the time. Font size is 1223 bytes, a saving of 7643 bytes compared to the full font.
 
@@ -71,3 +71,7 @@ Simple measures save 11463 bytes flash.
   This removes the splash screen bitmap from the SSD1306 driver. Saves 1352 bytes flash.
   [patch](arduino/libraries/Adafruit_SSD1306.patch)
 
+- Set "Optimize: Smallest (-Os) with LTO"
+  [Link Time Optimization](https://gcc.gnu.org/wiki/LinkTimeOptimization) (LTO) saves 11828 bytes flash. But sometimes LTO drops too much code, so this option requires careful checking the program still works after LTO.
+
+Together, these simple measures save 23291 bytes flash, enough for the code to fit in 64K. (size: 63756 bytes).
