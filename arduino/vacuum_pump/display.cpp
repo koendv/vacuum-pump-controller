@@ -135,7 +135,7 @@ void loop() {
     // print vacuum in hPa
     drawRightInt(vacuum, SCREEN_HEIGHT - 2); // print number right aligned
     // alive indicator
-    oled.fillRect(125, 16, 3, 4, blink ? SSD1306_BLACK : SSD1306_WHITE);
+    oled.fillRect(SCREEN_WIDTH-4, SCREEN_HEIGHT-5, 4, 4, blink ? SSD1306_BLACK : SSD1306_WHITE);
     // update display
     oled.display();
     // update status

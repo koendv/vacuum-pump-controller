@@ -29,7 +29,8 @@ namespace console {
 enum err_code { ERR_OK,
                 ERR_SYNTAX,
                 ERR_VALUE };
-enum err_code ok;
+enum err_code ok = ERR_OK;
+bool echo_on = true;
 
 String cmdline;
 
@@ -106,9 +107,7 @@ void m_code(int m) {
     m_pressure(m, 3, true);
     break;
   default:
-    Serial.print("echo:Unknown command: \"M");
-    Serial.print(m);
-    Serial.println('"');
+    ok = ERR_SYNTAX;
     break;
   }
   return;
@@ -213,6 +212,8 @@ void doCommand() {
   }
 
   // execute command
+  if (echo_on)
+    Serial.println();
   if (cmdline.length() != 0) {
     switch (cmdline[0]) {
     case 'p': // set proportional gain
@@ -278,14 +279,18 @@ void doCommand() {
     break;
   case ERR_SYNTAX:
     Serial.println("what?");
+    Serial.println("ko");
     break;
   case ERR_VALUE:
     Serial.println("how?");
+    Serial.println("ko");
     break;
   default:
     break;
   }
   cmdline = "";
+  if (echo_on)
+    Serial.print(">");
   return;
 }
 
@@ -303,7 +308,6 @@ void setup() {
 }
 
 void loop() {
-  static bool echo_on = true;
   while (Serial.available()) {
     char ch = Serial.read();
     if (isUpperCase(ch))
@@ -318,11 +322,7 @@ void loop() {
       break;
     case '\r':
     case '\n':
-      if (echo_on)
-        Serial.println();
       doCommand();
-      if (echo_on)
-        Serial.print(">");
       break;
     default:
       if (cmdline.length() != MAXCMDLEN)
