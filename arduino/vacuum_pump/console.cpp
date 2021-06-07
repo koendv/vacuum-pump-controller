@@ -62,51 +62,67 @@ void m_pressure(int m, int s, bool relative) {
 }
 
 // parse m-code
+
+// m-code format: M8 sensor_number action
+// where:
+//   sensor_number 0=air, 1=pump, 2=nozzle1, 3=nozzle2
+//   action 0=off, 1=on, 2=read absolute pressure in hPa, 3=read vacuum in hPa
+// M115 is used by OpenPnP for detecting the vacuum pump controller
+
 void m_code(int m) {
   switch (m) {
-  case 115:
+  case 115: // M115 detect firmware
     Serial.println("FIRMWARE_NAME:vacuum pump");
     break;
-  case 800: // M800 switch vacuum pump on
-    PIDctrl::automatic();
+  case 800: // M800, M801 no-op
+  case 801:
     break;
-  case 801: // M801 switch vacuum pump off
-    PIDctrl::manual(0);
-    break;
-  case 802: // M802 switch nozzle 1 vacuum solenoid on
-    motor::setswitch(2, true);
-    break;
-  case 803: // M803 switch nozzle 1 vacuum solenoid off
-    motor::setswitch(2, false);
-    break;
-  case 804: // M804 switch nozzle 2 vacuum solenoid on
-    motor::setswitch(3, true);
-    break;
-  case 805: // M805 switch nozzle 2 vacuum solenoid off
-    motor::setswitch(3, false);
-    break;
-  case 900: // M900 read absolute pressure sensor0 (air)
+  case 802: // M802 read absolute pressure sensor0 (air)
     m_pressure(m, 0, false);
     break;
-  case 901: // M901 read absolute pressure sensor1 (pump)
+  case 803: // M803 read vacuum sensor0 (air) - always 0
+    m_pressure(m, 0, true);
+    break;
+  case 810: // M810 switch vacuum pump off
+    PIDctrl::manual(0);
+    break;
+  case 811: // M811 switch vacuum pump on
+    PIDctrl::automatic();
+    break;
+  case 812: // M812 read absolute pressure sensor1 (pump)
     m_pressure(m, 1, false);
     break;
-  case 902: // M902 read absolute pressure sensor2 (nozzle1)
-    m_pressure(m, 2, false);
-    break;
-  case 903: // M903 read absolute pressure sensor3 (nozzle2)
-    m_pressure(m, 3, false);
-    break;
-  case 911: // M911 read relative vacuum sensor1 (pump)
+  case 813: // M813 read vacuum sensor1 (pump)
     m_pressure(m, 1, true);
     break;
-  case 912: // M912 read relative vacuum sensor2 (nozzle1)
+  case 820: // M820 switch nozzle 1 vacuum solenoid off
+    motor::setswitch(2, false);
+    break;
+  case 821: // M821 switch nozzle 1 vacuum solenoid on
+    motor::setswitch(2, true);
+    break;
+  case 822: // M822 read absolute pressure sensor2 (nozzle1)
+    m_pressure(m, 2, false);
+    break;
+  case 823: // M823 read vacuum sensor2 (nozzle1)
     m_pressure(m, 2, true);
     break;
-  case 913: // M913 read relative vacuum sensor3 (nozzle2)
+  case 830: // M830 switch nozzle 2 vacuum solenoid off
+    motor::setswitch(3, false);
+    break;
+  case 831: // M831 switch nozzle 2 vacuum solenoid on
+    motor::setswitch(3, true);
+    break;
+  case 832: // M832 read absolute pressure sensor3 (nozzle2)
+    m_pressure(m, 3, false);
+    break;
+  case 833: // M833 read vacuum sensor3 (nozzle2)
     m_pressure(m, 3, true);
     break;
   default:
+    Serial.print("echo:unknown command \"");
+    Serial.print(cmdline);
+    Serial.println('"');
     ok = ERR_SYNTAX;
     break;
   }
@@ -273,22 +289,13 @@ void doCommand() {
       break;
     }
   }
-  switch (ok) {
-  case ERR_OK:
-    Serial.println("ok");
-    break;
-  case ERR_SYNTAX:
+  if (ok == ERR_SYNTAX) {
     Serial.println("what?");
-    Serial.println("ko");
-    break;
-  case ERR_VALUE:
+  } else if (ok == ERR_VALUE) {
     Serial.println("how?");
-    Serial.println("ko");
-    break;
-  default:
-    break;
   }
   cmdline = "";
+  Serial.println("ok");
   if (echo_on)
     Serial.print(">");
   return;

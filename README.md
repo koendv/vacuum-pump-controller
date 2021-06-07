@@ -187,52 +187,7 @@ Run *autotune* again if firmware has been updated, vacuum pump or vacuum vessel 
 
 #### m - M-Code
 
-M-code commands consist of the letter ``M`` followed by a number. M-code commands are intended for computer-to-computer interaction. M-code commands are not echoed back when you type them, and no ``>`` prompt is printed when the command is finished.
-
-The following m-codes are available for easy integration with [openpnp](http://openpnp.org):
-
-| code | description                       |
-| ---- | --------------------------------- |
-| M800 | switch pump on                    |
-| M801 | switch pump off                   |
-| M802 | switch nozzle 1 solenoid on       |
-| M803 | switch nozzle 1 solenoid off      |
-| M804 | switch nozzle 2 solenoid on       |
-| M805 | switch nozzle 2 solenoid off      |
-| M900 | read absolute air pressure        |
-| M901 | read absolute pressure at pump    |
-| M902 | read absolute pressure at nozzle1 |
-| M903 | read absolute pressure at nozzle2 |
-| M911 | read vacuum at pump               |
-| M912 | read vacuum at nozzle1            |
-| M913 | read vacuum at nozzle2            |
-
-Example:
-Switch pump on.
-
-```
-m800
-ok
-```
-Measure absolute air pressure and absolute pump pressure:
-
-```
-m900
-[read:937]
-ok
-m901
-[read:837]
-ok
-```
-Vacuum is difference between air pressure and pump pressure:
-
-```
-m911
-[read:100]
-ok
-```
-
-Vacuum values can be negative due to small measurement errors, or if the sensor for measuring atmospheric pressure is missing.
+M-code commands consist of the letter ``M`` followed by a three-digit number. M-code commands are not echoed back when you type them, and no ``>`` prompt is printed when the command is finished. See the section on [OpenPnP](#openpnp) for details.
 
 #### w - Write
 The ``w`` write command saves Kp, Ki, Kd, setpoint, and logging to non-volatile memory. The saved values will be restored on power-up.
@@ -369,16 +324,98 @@ sudo adduser "$USER" dialout
 Unplug and plug in the vacuum pump controller. Check ``dmesg`` shows a new usb device *vacuum pump*. Check ``minicom -D /dev/ttyACM99_vacuum_pump`` gives you the console prompt of the vacuum pump.
 
 ### OpenPnP
+
 *TBD - in progress*
 
-In OpenPnP, configure a GCodeDriver for serial port ``/dev/ttyACM99_vacuum_pump``. 
+[OpenPnP](https://openpnp.org/) is software to run a machine that puts electronic components on a printed circuit board for soldering (pick-and-place machine).
+Typically, a pick-and-place machine uses vacuum to pick up small components.
+OpenPnP accesses the vacuum pump controller using the OpenPnP GCodeDriver.
+
+OpenPnP uses M-code M115 to detect a controller.
+
+The m-codes for vacuum have the structure ``M8`` *index* *action*, with *index*:
+
+- 0: ambient air (read only)
+- 1: vacuum pump
+- 2: nozzle1
+- 3: nozzle2
+
+and *action*:
+
+- 0: switch off
+- 1: switch on
+- 2: read absolute pressure in hPa
+- 3: read vacuum in hPa
+
+The following m-codes are available for easy integration with [openpnp](http://openpnp.org):
+
+| code | description                       |
+| ---- | --------------------------------- |
+| M115 | firmware version                  |
+| M800 | no-op                             |
+| M801 | no-op                             |
+| M802 | read absolute air pressure        |
+| M803 | always reads 0                    |
+| M810 | switch pump off                   |
+| M811 | switch pump on                    |
+| M812 | read absolute pressure at pump    |
+| M813 | read vacuum at pump               |
+| M820 | switch nozzle 1 solenoid off      |
+| M821 | switch nozzle 1 solenoid on       |
+| M822 | read absolute pressure at nozzle1 |
+| M823 | read vacuum at nozzle1            |
+| M830 | switch nozzle 2 solenoid off      |
+| M831 | switch nozzle 2 solenoid on       |
+| M832 | read absolute pressure at nozzle2 |
+| M833 | read vacuum at nozzle2            |
+
+Example:
+Switch pump on.
+
+```
+m811
+ok
+```
+Measure absolute air pressure and absolute pump pressure:
+
+```
+m802
+[read:937]
+ok
+m812
+[read:837]
+ok
+```
+Vacuum is difference between air pressure and pump pressure:
+
+```
+m813
+[read:100]
+ok
+```
+
+Vacuum values can be negative due to small measurement errors, or if the sensor for measuring atmospheric pressure is missing.
+
+In OpenPnP, configure a GCodeDriver VACUUM_PUMP for serial port ``/dev/ttyACM99_vacuum_pump``.
 
 Setting|value
 ---|---
-Detect firmware|FIRMWARE_NAME:vacuum pump
+FIRMWARE_NAME|vacuum pump
 COMMAND_CONFIRM_REGEX|^ok$
-ACTUATOR_READ_COMMAND|M911
+COMMAND_ERROR_REGEX|^(what\\?\|how\\?)$
+ACTUATE_BOOLEAN_COMMAND|M8\{Index\}\{True:1\}\{False:0\}
+ACTUATOR_READ_COMMAND|M8\{Index\}3
 ACTUATOR_READ_REGEX|\\[read:(?<Value>-?\d+)\\]
+
+For head, nozzle 1 and nozzle 2, use three VACUUM_PUMP actuators with index:
+
+Actuator|Index
+---|---
+head|1
+nozzle 1|2
+nozzle 2|3
+
+See [machine.xml](openpnp/machine.xml)
 
 ## Hardware
 
