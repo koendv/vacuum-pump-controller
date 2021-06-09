@@ -136,6 +136,8 @@ pins1 = [
   [059000,051000],
 ];
   
+// following coordinates have been extracted from pins1[]:
+
 pins_screws = [  
   [012000,051000],
   [012000,098000],

@@ -6,9 +6,12 @@ wall_thickness = 2.4;
 z_inside = 21; // was 21 XXX
 pcb_pillar = 3.0;
 pcb_thickness = 1.6;
+oled_w = 27.7;
+oled_h = 27.6;
+oled_z = wall_thickness+pcb_pillar+pcb_thickness+0.4*inch;
 
 w = 60;
-h = 85;
+h = 95;
 border = 5;
 slot_len = 10;
 
@@ -99,6 +102,8 @@ module bottom_body() {
         pcb_bottom_holes();
         through_holes();
     }
+    // buttress under oled
+    oled_support();
 }
 
 module dc005_jack() {
@@ -119,6 +124,24 @@ module usb_connector(){
     linear_extrude(10)
     offset(2*nozzle_width)
     square([12.5, 7.8], center=true);
+}
+
+
+module oled_support() {
+    corner = pins_screws[0];
+    pin3 = (pin3_oled-corner) / 1000;
+    translate(offset+pin3)
+    translate([oled_h, -oled_w/2, 0])
+    difference() {
+        hull() {
+            translate([-2*wall_thickness,0,0])
+            cube([2*wall_thickness, oled_w, oled_z]);
+            translate([-oled_w/2,0,0])
+            cube([oled_w/2, oled_w, eps]);
+        }
+        translate([-oled_w-wall_thickness, wall_thickness, -eps])
+        cube([oled_w,oled_w-2*wall_thickness,2*oled_z]);
+    }
 }
 
 // 3d model
