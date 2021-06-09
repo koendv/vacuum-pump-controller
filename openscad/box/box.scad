@@ -1,14 +1,12 @@
 include <pcb.scad>
+include <util.scad>
 
 $fn=$preview?16:32;
 nozzle_size = 0.4;
 wall_thickness = 2.4;
-z_inside = 21; // was 21 XXX
+z_inside = 21;
 pcb_pillar = 3.0;
 pcb_thickness = 1.6;
-oled_w = 27.7;
-oled_h = 27.6;
-oled_z = wall_thickness+pcb_pillar+pcb_thickness+0.4*inch;
 
 w = 60;
 h = 95;
@@ -19,16 +17,57 @@ offset_x = pcb_offset_x+10;
 offset_y = pcb_offset_y+1;
 offset = [offset_x, offset_y];
 
-// diameter of M3 screw
+m3_nut_h = 2.4+nozzle_width;
+m3_nut_d = 5.5+nozzle_width;
+m3_nut_coords = [
+    [offset_x, offset_y, 0],
+    [offset_x, offset_y+47, 0],
+    [offset_x+47, offset_y, 0],
+    [offset_x+47, offset_y+47, 0],
+    [border, border, 0],
+    [h-border, w-border, 0]
+    ];
+
+bottom_thickness = m3_nut_h + nozzle_width;
+
+oled_w = 27.7;
+oled_h = 27.6;
+oled_z = bottom_thickness+pcb_pillar+pcb_thickness+0.4*inch;
+
+// circle same diameter as M3 screw
 module m3() {
     circle(d=3.2);
 }
 
+module m3_nut_trap() {
+    translate([0, 0, -eps2])
+    cylinder_outer(d=m3_nut_d, h=m3_nut_h, fn=6);
+}
+
+module m3_nut_traps() {
+    for (p = m3_nut_coords) {
+        translate(p)
+        m3_nut_trap();
+    }
+}
+
+// this is a one layer bridging layer obove the nut trap
+// needed for fdm printing
+module m3_nut_bridging() {
+    translate([0, 0, m3_nut_h])
+    for (p = m3_nut_coords) {
+        translate(p)
+        cylinder(d=m3_nut_d, h=nozzle_width);
+    }
+}
+
+// screws to join top and bottom
 module through_holes() {
     translate([border, border]) m3();
     translate([h-border, w-border]) m3();
 }
 
+// slots for wall-mount
 module slots() {
     hull() {
         translate([border, w-border]) m3();
@@ -37,6 +76,14 @@ module slots() {
     hull() {
         translate([h-border, border]) m3();
         translate([h-border-slot_len, border]) m3();
+    }
+    hull() {
+        translate([border+slot_len, w/2]) m3();
+        translate([border+2*slot_len, w/2]) m3();
+    }
+    hull() {
+        translate([h-border-slot_len, w/2-slot_len/2]) m3();
+        translate([h-border-slot_len, w/2+slot_len/2]) m3();
     }
 }
 
@@ -55,11 +102,11 @@ module bottom_holes() {
 
 module top() {
     difference(){
-        linear_extrude(2*wall_thickness+z_inside)
+        linear_extrude(bottom_thickness+z_inside+wall_thickness)
         offset(nozzle_size+wall_thickness)
         square([h,w]);
         translate([0, 0, -eps2])
-        linear_extrude(wall_thickness+z_inside)
+        linear_extrude(bottom_thickness+z_inside)
         offset(nozzle_size)
         square([h,w]);
         linear_extrude(2*z_inside)
@@ -69,7 +116,7 @@ module top() {
         usb_connector();
     }
     // small triangular corners
-    translate([0, 0, wall_thickness])
+    translate([0, 0, bottom_thickness])
     linear_extrude(z_inside)
     intersection() {
         for (p = [[0,0], [0,w], [h,0], [h,w]]) {
@@ -80,23 +127,24 @@ module top() {
         offset(nozzle_size)
         square([h,w]);
     }
-    
 }
 
 module bottom() {
     difference() {
         bottom_body();
-        translate([0, 0, -wall_thickness])
+        translate([0, 0, -bottom_thickness])
         linear_extrude(z_inside)
         bottom_holes();
+        m3_nut_traps();
     }
+    m3_nut_bridging();
 }
 
 module bottom_body() {
-    linear_extrude(wall_thickness)
+    linear_extrude(bottom_thickness)
     square([h,w]);
     // pillars
-    linear_extrude(pcb_pillar+wall_thickness)
+    linear_extrude(pcb_pillar+bottom_thickness)
     offset(wall_thickness) {
         translate(offset)
         pcb_bottom_holes();
@@ -107,23 +155,25 @@ module bottom_body() {
 }
 
 module dc005_jack() {
-    translate([19.5,-5,wall_thickness+pcb_pillar+pcb_thickness+nozzle_width])
+    translate([19.5,-5,bottom_thickness+pcb_pillar+pcb_thickness+nozzle_width])
     cube([9+2*nozzle_width,14.2+2*nozzle_width,11+2*nozzle_width]);
 }
 
 module pj320a_jack() {
-    translate([47.75,0,wall_thickness+pcb_pillar+pcb_thickness+3.7])
+    translate([47.75,0,bottom_thickness+pcb_pillar+pcb_thickness+3.7])
     rotate([90,0,0])
-    cylinder(d=6.1/cos(30),h=12.9,$fn=6,center=true);
+    cylinder_outer(d=6.1,h=12.9,fn=6);
 }
 
 module usb_connector(){
-    translate([47.8, 60, 21.6])
+    translate([47.8, 60, 14.8])
+    translate([0, 0, bottom_thickness+pcb_pillar+pcb_thickness])
     rotate([90, 0, 0])
     translate([0, 0, -5])
     linear_extrude(10)
     offset(2*nozzle_width)
-    square([12.5, 7.8], center=true);
+    //square([8.4, 2.6], center=true); // usb c  connector
+    square([12.5, 7.8], center=true); // connector with overmold
 }
 
 
@@ -147,18 +197,18 @@ module oled_support() {
 // 3d model
 module 3d_model() {
     color("Blue")
-    translate([39.3,28.2,13.5]) // trial and error
+    translate([39.3,28.2,bottom_thickness+pcb_pillar+8.1]) // trial and error
     scale(0.254)
     translate([-4166.994629,3158.121338,-31.578953]) // from meshlab, Filters -> Quality measures and computations -> Compute Geometric Measures
     import("vpc.stl", 20); // exported from easyeda
 }
 
-if (0)
-rotate([180,0,0])
+if (1)
+//rotate([180,0,0])
 top();
 if (1)
 bottom();
-if (0)
+if (1)
 3d_model();
 
 //not truncated
