@@ -1,5 +1,6 @@
 include <pcb.scad>
 
+$fn=$preview?16:32;
 nozzle_size = 0.4;
 wall_thickness = 2.4;
 z_inside = 21; // was 21 XXX
@@ -15,10 +16,10 @@ offset_x = pcb_offset_x+10;
 offset_y = pcb_offset_y+1;
 offset = [offset_x, offset_y];
 
+// diameter of M3 screw
 module m3() {
     circle(d=3.2);
 }
-
 
 module through_holes() {
     translate([border, border]) m3();
@@ -54,7 +55,7 @@ module top() {
         linear_extrude(2*wall_thickness+z_inside)
         offset(nozzle_size+wall_thickness)
         square([h,w]);
-        translate([0, 0, -eps])
+        translate([0, 0, -eps2])
         linear_extrude(wall_thickness+z_inside)
         offset(nozzle_size)
         square([h,w]);
@@ -64,6 +65,7 @@ module top() {
         pj320a_jack();
         usb_connector();
     }
+    // small triangular corners
     translate([0, 0, wall_thickness])
     linear_extrude(z_inside)
     intersection() {
@@ -90,7 +92,7 @@ module bottom() {
 module bottom_body() {
     linear_extrude(wall_thickness)
     square([h,w]);
-    
+    // pillars
     linear_extrude(pcb_pillar+wall_thickness)
     offset(wall_thickness) {
         translate(offset)
@@ -119,25 +121,21 @@ module usb_connector(){
     square([12.5, 7.8], center=true);
 }
 
+// 3d model
 module 3d_model() {
     color("Blue")
-    translate([39.3,28.2,13.5])
+    translate([39.3,28.2,13.5]) // trial and error
     scale(0.254)
-    translate([-4166.994629,3158.121338,-31.578953])
-    import("vpc.stl", 20);
-}
-if (0) {
-    color("Red")
-    top_holes();
-    color("Blue")
-    bottom_holes();
-    translate([0,0,-eps])
-    square([h,w]);
+    translate([-4166.994629,3158.121338,-31.578953]) // from meshlab, Filters -> Quality measures and computations -> Compute Geometric Measures
+    import("vpc.stl", 20); // exported from easyeda
 }
 
-if (1){
-   translate([0,0,eps]) 
+if (0)
+rotate([180,0,0])
 top();
-%bottom();
-};
+if (1)
+bottom();
+if (0)
 3d_model();
+
+//not truncated
