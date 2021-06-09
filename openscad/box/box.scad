@@ -17,6 +17,7 @@ offset_x = pcb_offset_x+10;
 offset_y = pcb_offset_y+1;
 offset = [offset_x, offset_y];
 
+m3_screw_d = 3.2;
 m3_nut_h = 2.4+nozzle_width;
 m3_nut_d = 5.5+nozzle_width;
 m3_nut_coords = [
@@ -49,9 +50,15 @@ module oled_screen() {
     square([oled_y, oled_x]);
 }
 
+// 8-sided pillar for m3 screw
+module m3_pillar() {
+    rotate([0, 0, 180/8])
+    circle_outer(d=m3_screw_d+2*wall_thickness, fn=8);
+}
+
 // circle same diameter as M3 screw
 module m3() {
-    circle(d=3.2);
+    circle(d=m3_screw_d);
 }
 
 module m3_nut_trap() {
@@ -80,6 +87,35 @@ module m3_nut_bridging() {
 module through_holes() {
     translate([border, border]) m3();
     translate([h-border, w-border]) m3();
+}
+
+module top_pillars() {
+    translate([0, 0, bottom_thickness + pcb_pillar])
+    linear_extrude(z_inside - pcb_pillar) {
+        translate([border, border])
+        m3_pillar();
+        translate([h-border, w-border])
+        m3_pillar();
+        hull() {
+            translate([h, w])
+            circle(r=wall_thickness);
+            translate([h-border, w-border])
+            circle(r=wall_thickness);
+        } 
+        hull() {
+            circle(r=wall_thickness);
+            translate([border, border])
+            circle(r=wall_thickness);
+        }
+    }
+}
+
+module bottom_pillars() {
+    linear_extrude(pcb_pillar+bottom_thickness)
+    for (p = m3_nut_coords) {
+        translate(p)
+        m3_pillar();
+    }
 }
 
 // slots for wall-mount
@@ -118,13 +154,7 @@ module bottom_holes() {
 
 module top() {
     difference(){
-        linear_extrude(bottom_thickness+z_inside+wall_thickness)
-        offset(nozzle_size+wall_thickness)
-        square([h,w]);
-        translate([0, 0, -2*eps2])
-        linear_extrude(bottom_thickness+z_inside)
-        offset(nozzle_size)
-        square([h,w]);
+        top_body();
         linear_extrude(2*z_inside)
         top_holes();
         dc005_jack();
@@ -145,6 +175,19 @@ module top() {
     }
 }
 
+module top_body() {
+    difference() {
+        linear_extrude(bottom_thickness+z_inside+wall_thickness)
+        offset(nozzle_size+wall_thickness)
+        square([h,w]);
+        translate([0, 0, -2*eps2])
+        linear_extrude(bottom_thickness+z_inside)
+        offset(nozzle_size)
+        square([h,w]);
+    }
+    top_pillars();
+}
+
 module bottom() {
     difference() {
         bottom_body();
@@ -160,12 +203,7 @@ module bottom_body() {
     linear_extrude(bottom_thickness)
     square([h,w]);
     // pillars
-    linear_extrude(pcb_pillar+bottom_thickness)
-    offset(wall_thickness) {
-        translate(offset)
-        pcb_bottom_holes();
-        through_holes();
-    }
+    bottom_pillars();
     // buttress under oled
     oled_support();
 }
