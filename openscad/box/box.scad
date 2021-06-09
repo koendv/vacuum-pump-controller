@@ -35,10 +35,11 @@ oled_w = 27.3;
 oled_h = 27.8;
 oled_x = 21.744;
 oled_y = 10.864;
-oled_z = bottom_thickness+pcb_pillar+pcb_thickness+0.4*inch;
+oled_z = bottom_thickness+pcb_pillar+pcb_thickness+11.0;
 
 oled_dist = (27.8 - 19.268)/2 + 2.1 - 1.5; // distance from connector pin to first pixel 
 
+// cutout for oled display
 module oled_screen() {
     corner = pins_screws[0];
     pin3 = (pin3_oled-corner) / 1000;
