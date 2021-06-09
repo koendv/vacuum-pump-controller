@@ -3,7 +3,7 @@ include <util.scad>
 
 $fn=$preview?16:32;
 nozzle_size = 0.4;
-wall_thickness = 2.4;
+wall_thickness = 4 * nozzle_size;
 z_inside = 21;
 pcb_pillar = 3.0;
 pcb_thickness = 1.6;
@@ -30,9 +30,23 @@ m3_nut_coords = [
 
 bottom_thickness = m3_nut_h + nozzle_width;
 
-oled_w = 27.7;
-oled_h = 27.6;
+// oled dimensions from oled.jpg
+oled_w = 27.3;
+oled_h = 27.8;
+oled_x = 21.744;
+oled_y = 10.864;
 oled_z = bottom_thickness+pcb_pillar+pcb_thickness+0.4*inch;
+
+oled_dist = (27.8 - 19.268)/2 + 2.1 - 1.5; // distance from connector pin to first pixel 
+
+module oled_screen() {
+    corner = pins_screws[0];
+    pin3 = (pin3_oled-corner) / 1000;
+    translate(offset+pin3)
+    translate([oled_dist, -oled_x/2])
+    offset(1.0)
+    square([oled_y, oled_x]);
+}
 
 // circle same diameter as M3 screw
 module m3() {
@@ -91,6 +105,7 @@ module top_holes() {
     translate(offset)
     pcb_top_holes();
     through_holes();
+    oled_screen();
 }
 
 module bottom_holes() {
@@ -105,7 +120,7 @@ module top() {
         linear_extrude(bottom_thickness+z_inside+wall_thickness)
         offset(nozzle_size+wall_thickness)
         square([h,w]);
-        translate([0, 0, -eps2])
+        translate([0, 0, -2*eps2])
         linear_extrude(bottom_thickness+z_inside)
         offset(nozzle_size)
         square([h,w]);
@@ -204,11 +219,12 @@ module 3d_model() {
 }
 
 if (1)
+translate([0, 0, eps])
 //rotate([180,0,0])
 top();
 if (1)
 bottom();
-if (1)
+if (0)
 3d_model();
 
 //not truncated

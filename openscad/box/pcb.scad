@@ -236,8 +236,6 @@ pins_motor = [
 
 // pin3 of the oled - the pin in the middle
 pin3_oled = [059690,077470];
-oled_x = 21.744;
-oled_y = 10.864;
 
 pcb_x = 55.0;
 pcb_y = 55.0;
@@ -294,21 +292,11 @@ module stm32_button_and_jumpers() {
     dupont_connector(pins_stm32);
 }
 
-module oled_screen() {
-    corner = pins_screws[0];
-    pin3 = (pin3_oled-corner) / 1000;
-    translate(pin3)
-    translate([3.0, -oled_x/2])
-    offset(1.0)
-    square([oled_y, oled_x]);
-}
-
 module pcb_top_holes() {
     dupont_connector(pins_serial);
     dupont_connector(pins_motor);
     dupont_connector(pins_sensors);
     stm32_button_and_jumpers();
-    oled_screen();
     //screw_holes();
 }
 
