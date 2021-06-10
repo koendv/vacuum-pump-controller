@@ -4,7 +4,7 @@ include <util.scad>
 $fn=$preview?16:32;
 nozzle_size = 0.4;
 wall_thickness = 4 * nozzle_size;
-z_inside = 21;
+z_inside = 22;
 pcb_pillar = 3.0;
 pcb_thickness = 1.6;
 
@@ -262,6 +262,7 @@ translate([0, 0, eps])
 //rotate([180,0,0])
 top();
 if (1)
+color("LightGreen")
 bottom();
 if (0)
 3d_model();
