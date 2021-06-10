@@ -1,0 +1,38 @@
+diff --git a/arduino/vacuum_pump/console.cpp b/arduino/vacuum_pump/console.cpp
+index dc46cf8..4287dec 100644
+--- a/arduino/vacuum_pump/console.cpp
++++ b/arduino/vacuum_pump/console.cpp
+@@ -61,6 +61,24 @@ void m_pressure(int m, int s, bool relative) {
+   Serial.println(']');
+ }
+ 
++// purge - open solenoid valve if vacuum above setpoint
++void m_purge() {
++  if (PIDctrl::isAuto() && !motor::getswitch(2) && (sensor::vacuum > settings::setpoint)) {
++    PIDctrl::manual(0);
++    motor::setswitch(2, HIGH);
++    // allow air to enter until setpoint reached
++    for (int count = 0; count < 450; count++) {
++      sensor::readSensors();
++      if (sensor::vacuum <= settings::setpoint)
++        break;
++      delay(10);
++    }
++    // close exhaust valve. switch to PID.
++    motor::setswitch(2, LOW);
++    PIDctrl::automatic();
++  }
++}
++
+ // parse m-code
+ 
+ // m-code format: M8 sensor_number action
+@@ -246,7 +264,7 @@ void doCommand() {
+       break;
+     case 's': // set setpoint
+       settings::setpoint = fval;
+-      PIDctrl::reload();
++      m_purge();
+       break;
+     case 'o': // output manual mode
+       if (cmdline.length() == 1)
