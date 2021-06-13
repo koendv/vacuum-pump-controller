@@ -25,6 +25,7 @@ I've experimented plugging and unplugging sensor and display when connecting ove
 The sensors do not have a reset pin. If long-term stability is a problem, power the sensors through a AP2112K-3.3 low drop voltage regulator with the voltage regulator enable connected to a processor pin. This way the processor can power cycle the sensors if the sensors need a hard reset.
 
 ## Pumps with PWM input
+*XXX checkme*
 
 Vacuum pumps with PWM input can be connected like this:
 
@@ -42,7 +43,7 @@ The pump motor PWM input signal has to toggle between low and high impedance. Ac
  - AIN1 low
  - AIN2 PWM signal
 
-This toggles AOUT1 between L (low) and OFF (high impedance). 
+This toggles AOUT1 between L (low) and OFF (high impedance). See [patch](arduino/vacuum_pump/attic/motor_with_pwm_input.patch)
 
 On a Parker D1001-23-01 vacuum pump, wire colors are: red 12V, black ground, white PWM, blue tacho. Check datasheet before connecting.
 

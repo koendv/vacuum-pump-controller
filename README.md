@@ -252,7 +252,7 @@ There is no need to calibrate the sensors; the sensors are calibrated at the fac
 
 The  vacuum pump is limited to 12V 1A.
 
-For 12V pumps that draw more than 1A, see [pumps with PWM input]()
+For 12V pumps that draw more than 1A, see [pumps with PWM input](README_DEVELOPER.md#pumps-with-pwm-input)
 
 For the controller to work, if the voltage on pin AOUT1 increases, the vacuum pump should run faster, and the vacuum should increase.
 
