@@ -252,16 +252,7 @@ There is no need to calibrate the sensors; the sensors are calibrated at the fac
 
 The  vacuum pump is limited to 12V 1A.
 
- If the vacuum pump has four wires:
-
- - red (+) to 12V
- - black (-) to GND
- - PWM input to AO1
- - Tacho output does not need to be connected
-
- The vacuum pump can exceed 12V 1A, as the TB6612 driver only has to supply the PWM signal.
-
-On a Parker D1001-23-01 vacuum pump, wire colors are: red 12V, black ground, white PWM, blue tacho. Check datasheet before connecting.
+For 12V pumps that draw more than 1A, see [pumps with PWM input]()
 
 For the controller to work, if the voltage on pin AOUT1 increases, the vacuum pump should run faster, and the vacuum should increase.
 

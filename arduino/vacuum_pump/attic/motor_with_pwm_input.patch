@@ -1,0 +1,98 @@
+diff --git a/README.md b/README.md
+index 65ccb55..ba5fa52 100644
+--- a/README.md
++++ b/README.md
+@@ -252,16 +252,7 @@ There is no need to calibrate the sensors; the sensors are calibrated at the fac
+ 
+ The  vacuum pump is limited to 12V 1A.
+ 
+- If the vacuum pump has four wires:
+-
+- - red (+) to 12V
+- - black (-) to GND
+- - PWM input to AO1
+- - Tacho output does not need to be connected
+-
+- The vacuum pump can exceed 12V 1A, as the TB6612 driver only has to supply the PWM signal.
+-
+-On a Parker D1001-23-01 vacuum pump, wire colors are: red 12V, black ground, white PWM, blue tacho. Check datasheet before connecting.
++For 12V pumps that draw more than 1A, see [pumps with PWM input]()
+ 
+ For the controller to work, if the voltage on pin AOUT1 increases, the vacuum pump should run faster, and the vacuum should increase.
+ 
+diff --git a/README_DEVELOPER.md b/README_DEVELOPER.md
+index 064c916..5d4d6a6 100644
+--- a/README_DEVELOPER.md
++++ b/README_DEVELOPER.md
+@@ -24,6 +24,30 @@ I've experimented plugging and unplugging sensor and display when connecting ove
+ 
+ The sensors do not have a reset pin. If long-term stability is a problem, power the sensors through a AP2112K-3.3 low drop voltage regulator with the voltage regulator enable connected to a processor pin. This way the processor can power cycle the sensors if the sensors need a hard reset.
+ 
++## Pumps with PWM input
++
++Vacuim pumps with PWM input can be connected like this:
++
++ - red (+) to 12V
++ - black (-) to GND
++ - PWM input to AO1
++ - Tacho output does not need to be connected
++
++The vacuum pump can exceed 1A, as the TB6612 driver only has to supply the PWM signal.
++
++The PWM signal has to toggle between low and high impedance. According to the truth table "H-SW Control Function" in the TB6612 datasheet, this can be done with:
++
++ - STBY high
++ - PWM1 high
++ - AIN1 low
++ - AIN2 PWM signal
++
++This toggles AOUT1 between L (low) and OFF (high impedance). 
++
++
++
++On a Parker D1001-23-01 vacuum pump, wire colors are: red 12V, black ground, white PWM, blue tacho. Check datasheet before connecting.
++
+ ## Footswitch
+ 
+ The footswitch connector has one digital/analog and two digital contacts. The controller works with a SPDT footswitch.
+diff --git a/arduino/vacuum_pump/motor.cpp b/arduino/vacuum_pump/motor.cpp
+index 89faded..b8732b4 100644
+--- a/arduino/vacuum_pump/motor.cpp
++++ b/arduino/vacuum_pump/motor.cpp
+@@ -28,9 +28,9 @@ void setup() {
+   pinMode(TB6612_BIN2, OUTPUT);
+ 
+   digitalWrite(TB6612_STBY, LOW);
+-  analogWrite(TB6612_PWMA, MAXPWM);
++  digitalWrite(TB6612_PWMA, HIGH);
+   digitalWrite(TB6612_AIN1, LOW);
+-  digitalWrite(TB6612_AIN2, LOW);
++  analogWrite(TB6612_AIN2, MAXPWM);
+   digitalWrite(TB6612_PWMB, HIGH);
+   digitalWrite(TB6612_BIN1, LOW);
+   digitalWrite(TB6612_BIN2, LOW);
+@@ -55,18 +55,15 @@ void speed(int pwm, int port) {
+   if (port == 0) { // port A
+     pwma = pwm;
+     pwma_percent = pwma * 100.0 / MAXPWM;
+-    if (pwm == 0) {
++    // with motor pwm input pin connected to TB6612 pin AOUT1
++    if (pwm > 0) {
+       digitalWrite(TB6612_AIN1, LOW);
+-      digitalWrite(TB6612_AIN2, LOW);
+-      analogWrite(TB6612_PWMA, pwm);
+-    } else if (pwm > 0) {
+-      digitalWrite(TB6612_AIN1, HIGH);
+-      digitalWrite(TB6612_AIN2, LOW);
+-      analogWrite(TB6612_PWMA, pwm);
++      digitalWrite(TB6612_PWMA, HIGH);
++      analogWrite(TB6612_AIN2, pwm);
+     } else {
+       digitalWrite(TB6612_AIN1, LOW);
+-      digitalWrite(TB6612_AIN2, HIGH);
+-      analogWrite(TB6612_PWMA, -pwm);
++      digitalWrite(TB6612_PWMA, HIGH);
++      analogWrite(TB6612_AIN2, 0);
+     }
+   } else { // port B
+     pwmb = pwm;

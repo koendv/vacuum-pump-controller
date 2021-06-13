@@ -24,6 +24,28 @@ I've experimented plugging and unplugging sensor and display when connecting ove
 
 The sensors do not have a reset pin. If long-term stability is a problem, power the sensors through a AP2112K-3.3 low drop voltage regulator with the voltage regulator enable connected to a processor pin. This way the processor can power cycle the sensors if the sensors need a hard reset.
 
+## Pumps with PWM input
+
+Vacuum pumps with PWM input can be connected like this:
+
+ - red (+) to 12V
+ - black (-) to GND
+ - PWM input to AO1
+ - Tacho output does not need to be connected
+
+The vacuum pump can exceed 1A, as the TB6612 driver only has to supply the PWM signal.
+
+The pump motor PWM input signal has to toggle between low and high impedance. According to the truth table "H-SW Control Function" in the [TB6612 datasheet](doc/TB6612FNG_datasheet_en_20141001.pdf), this can be done with:
+
+ - STBY high
+ - PWMA high
+ - AIN1 low
+ - AIN2 PWM signal
+
+This toggles AOUT1 between L (low) and OFF (high impedance). 
+
+On a Parker D1001-23-01 vacuum pump, wire colors are: red 12V, black ground, white PWM, blue tacho. Check datasheet before connecting.
+
 ## Footswitch
 
 The footswitch connector has one digital/analog and two digital contacts. The controller works with a SPDT footswitch.
