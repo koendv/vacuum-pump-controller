@@ -274,7 +274,7 @@ If there is a second solenoid valve, connect:
 
 Sometimes a small, standalone tool is preferred. The optional footswitch can be used to switch the first solenoid valve on and off.
 
-The footswitch connects using a 3.5mm TRRS jack. Solder a cable from an old mobile phone earset to an [SPDT footswitch](https://www.aliexpress.com/wholesale?SearchText=spdt+footswitch&SortType=price_asc). Connections are:
+The footswitch connects using a 3.5mm TRRS jack. Solder a cable from an old mobile phone earset to an [SPDT footswitch](https://www.aliexpress.com/wholesale?SearchText=footswitch&SortType=price_asc). Connections are:
 
 - Tip: NO Normally open
 - Ring1: NC Normally closed
