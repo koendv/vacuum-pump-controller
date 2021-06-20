@@ -72,7 +72,7 @@ void m_pressure(int m, int s, bool relative) {
 void m_code(int m) {
   switch (m) {
   case 115: // M115 detect firmware
-    Serial.println("FIRMWARE_NAME:vacuum pump");
+    Serial.println("FIRMWARE_NAME:vacuum pump SOURCE_CODE_URL: https://github.com/koendv/vacuum-pump-controller");
     break;
   case 800: // M800, M801 no-op
   case 801:
