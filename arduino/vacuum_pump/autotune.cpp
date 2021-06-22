@@ -67,7 +67,7 @@ void tune() {
   int minpwm, count; // loop variables
 
   double minPressure, maxPressure, tauPressure;
-  uint32_t beginMillis, endMillis, tauMillis;
+  uint32_t beginMillis, endMillis, tauMillis, steadyPressureCount;
   double tau, tau1, Kp, sumKp, Kp1, Ki, sumKi, Ki1;
   const double lambda = 3.0; // tuning factor. increase if unstable.
 
@@ -124,20 +124,31 @@ void tune() {
     Serial.println();
 
     // exhaust valve closed, pump at max speed, measure steady-state pressure
-    float lastVacuum = -1.0;
+    const uint32_t sample_delay1 = 500; // milliseconds
+    steadyPressureCount = 0;
+    maxPressure = 0;
     motor::speed(MAXPWM);
     for (count = 0; count < maxCount; count++) {
       sensor::readSensors();
       printStatus();
-      if (abs(sensor::vacuum - lastVacuum) < kMeasureErr)
-        break;
-      lastVacuum = sensor::vacuum;
+      if (sensor::vacuum > maxPressure) {
+        maxPressure = sensor::vacuum;
+        steadyPressureCount = 0;
+      } else {
+        steadyPressureCount++;
+        if (steadyPressureCount > 10000 / sample_delay1)
+          break; // 10s of unchanged max. vacuum
+      }
       if (Serial.available() && (Serial.read() == 'c'))
         return;
-      delay(500);
+      delay(sample_delay1);
     }
-    maxPressure = sensor::vacuum;
     Serial.println();
+    if (maxPressure == 0) {
+      // pump running but maximum pressure zero
+      Serial.println("check pump, sensor");
+      return;
+    }
 
     // stop pump, open exhaust valve
     motor::speed(MINPWM);
