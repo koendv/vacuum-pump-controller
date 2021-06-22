@@ -80,6 +80,8 @@ This time measurement gives the time constant &tau;. The PID controller integral
 
 The safety factor can be tuned a little to trade off stability for accuracy, if needed.
 
+The step response can be measured by turning on logging ``l1`` and switching between pump off ``o0`` and pump on ``o100``. Capture console output, and import in a spreadsheet as csv. Use as input for PID tuning software.
+
 ## Ways to save flash
 
 Simple measures to save flash.
