@@ -75,7 +75,7 @@ void tune() {
   sumKp = 0;
   sumKi = 0;
 
-  for (int cycle = 1; cycle <= kCycles; cycle++) {
+  for (int cycle = 0; cycle <= kCycles; cycle++) {
     Serial.print("cycle ");
     Serial.print(cycle);
     Serial.print('/');
@@ -215,8 +215,12 @@ void tune() {
     Serial.print(" Ki: ");
     Serial.println(Ki1);
 
-    sumKp += Kp1;
-    sumKi += Ki1;
+    // don't use data from first cycle
+    // first cycle is used to get system in steady state
+    if (cycle != 0) {
+      sumKp += Kp1;
+      sumKi += Ki1;
+    }
   }
 
   // average to reduce noise
